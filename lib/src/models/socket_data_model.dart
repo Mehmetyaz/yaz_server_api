@@ -1,14 +1,12 @@
 import 'dart:convert';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import '../services/encryption.dart';
 import 'statics.dart';
 
 ///
-@JsonSerializable()
 class SocketData {
   ///
   SocketData.create(
@@ -69,15 +67,12 @@ class SocketData {
   Map<String, dynamic> toJson() => fullData;
 
   ///
-  @JsonKey(name: "message_id", ignore: false, nullable: false)
   String messageId;
 
   ///
-  @JsonKey(name: "message_type", ignore: false, nullable: false)
   String type;
 
   ///
-  @JsonKey(ignore: true)
   bool schemeValid;
 
   ///
@@ -100,22 +95,18 @@ class SocketData {
   }
 
   ///
-  @JsonKey(ignore: true)
   Map<String, dynamic> fullData = {
     "success": false,
     "reason": "data not created or operated"
   };
 
   ///
-  @JsonKey(ignore: true)
   bool isDecrypted;
 
   ///
-  @JsonKey(ignore: true)
   bool isEncrypted;
 
   ///
-  @JsonKey(ignore: true)
   Future<SocketData> encrypt(Nonce nonce, Nonce cNonce) async {
     if (isDecrypted) {
       schemeValid = fullData.containsKey("data") &&
@@ -141,7 +132,6 @@ class SocketData {
   }
 
   ///
-  @JsonKey(ignore: true)
   Future<SocketData> decrypt(Nonce nonce, Nonce cNonce) async {
     if (isEncrypted || !(fullData["data"] is String)) {
       fullData["data"] = await encryptionService.decrypt1(

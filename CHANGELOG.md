@@ -1,3 +1,3 @@
-## 1.0.0
+## [0.0.1] - 2020-11-06
 
-- Initial version, created by Stagehand
+* Yaz Framework Api First Release
