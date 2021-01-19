@@ -71,7 +71,7 @@ class TriggerService {
   void periodic(String name, Duration duration, PeriodicTrigger callback) {
     var timer = Timer.periodic(duration, (t) {
       callback().timeout(timeout, onTimeout: () {
-        print('PERIODIC FUNCTION TIMEOUT');
+
       });
     });
     _periodic[name] = timer;
@@ -116,16 +116,11 @@ class TriggerService {
     _listeners[dbListener.id][dbListener.messageId] = dbListener;
   }
 
-  _addChatListener(DbListener dbListener) {
-
-  }
-
 
   ///
   final Map<ObjectId, Map<String , DbListener>> _listeners =
       <ObjectId, Map<String , DbListener>>{};
-  final Map<ObjectId, Map<String , DbListener>> _chatListener =
-  <ObjectId, Map<String , DbListener>>{};
+
   /// millis epoch
   final Map<ObjectId, int> queueLast = <ObjectId, int>{};
 
@@ -138,8 +133,6 @@ class TriggerService {
     if (_listeners[objectId].isEmpty) {
       _listeners.remove(objectId);
     }
-    //TODO:REMOVE
-    print("OBJECTID: ${_listeners[objectId]}");
   }
 
   final Map<ObjectId, List<DbListener>> _listenersToRemove =
@@ -148,7 +141,6 @@ class TriggerService {
   ///
   void _remove() {
     _removing = true;
-    print(_listenersToRemove.keys);
     for (var removedID in _listenersToRemove.keys) {
       for (var removingListener in _listenersToRemove[removedID]) {
         _listeners[removedID].remove(removingListener);
@@ -163,7 +155,7 @@ class TriggerService {
       ObjectId objectId, Map<String, dynamic> data, int millis) async {
     try {
       if (_listeners.containsKey(objectId)) {
-        print("contains");
+
         await Future.delayed(const Duration(seconds: 2));
 
         // ignore: literal_only_boolean_expressions
@@ -192,7 +184,7 @@ class TriggerService {
               }
               _listenersToRemove[objectId].add(element);
             } else {
-              print("sending : ${element.messageId}");
+
 
               //ignore: unawaited_futures
               sendAndWaitMessage(
@@ -207,7 +199,7 @@ class TriggerService {
                       waitingType: "stream_received",
                       waitingID: element.messageId)
                   .timeout(const Duration(seconds: 5), onTimeout: () {
-                print("timeout");
+
 
                 if (_listenersToRemove[objectId] == null) {
                   _listenersToRemove[objectId] = <DbListener>[];
@@ -235,10 +227,10 @@ class TriggerService {
           _remove();
         }
       } else {
-        print("not contains");
+
       }
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
+      //TODO: ADD ERROR
     }
   }
 
@@ -258,13 +250,13 @@ class TriggerService {
     var isListen = _listeners[res["data"]["_id"]] != null &&
         _listeners[res["data"]["_id"]].isNotEmpty;
 
-    print("ISLISTEN::: $isListen");
+
 
     if (afterReq || isListen) {
       PermissionHandler.resource(query).then((value) {
         for (var trig in _onUpdateTriggers[query.collection] ?? <OnUpdate>[]) {
           trig(query, before, value).timeout(timeout, onTimeout: () {
-            print("OnUpdate Function Timeout");
+
           });
         }
         value["type"] = "update";
@@ -273,7 +265,7 @@ class TriggerService {
     } else {
       for (var trig in _onUpdateTriggers[query.collection] ?? <OnUpdate>[]) {
         trig(query, before, null).timeout(timeout, onTimeout: () {
-          print("OnUpdate Function Timeout");
+
         });
       }
     }
@@ -285,7 +277,7 @@ class TriggerService {
       Query query, Map<String, dynamic> before, Map<String, dynamic> res) {
     for (var trig in _onDeleteTriggers[query.collection] ?? <OnDelete>[]) {
       trig(query, before).timeout(timeout, onTimeout: () {
-        print("OnDelete Function Timeout");
+
       });
     }
     notifyListeners(res["_id"], {"type": "delete"});
@@ -294,7 +286,7 @@ class TriggerService {
   void _triggerCreates(Query query, Map<String, dynamic> res) {
     for (var trig in _onCreateTriggers[query.collection] ?? <OnCreate>[]) {
       trig(query).timeout(timeout, onTimeout: () {
-        print("OnCreate Function Timeout");
+
       });
     }
   }

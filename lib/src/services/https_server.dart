@@ -22,6 +22,7 @@ const Map<String, dynamic> _defaultHeaders = {
   'Access-Control-Allow-Methods': 'GET,OPTIONS',
 };
 
+///
 HttpServerService httpServerService = HttpServerService();
 
 
@@ -67,14 +68,17 @@ class HttpServerService {
   ///
   Future<void> _listenServer() async {
     try {
+      // ignore: avoid_print
       print("HTTP SERVER LISTENING ON: ${_server.address}:${_server.port}");
       await for (HttpRequest request in _server) {
         //ignore: unawaited_futures
         _handleHttpRequest(request);
       }
     } on Exception catch (e) {
+      // ignore: avoid_print
       print("SERVER ERROR: $e");
     }
+    // ignore: avoid_print
     print("Server Closed");
   }
 
@@ -88,8 +92,8 @@ class HttpServerService {
         try {
           var soc = await WebSocketTransformer.upgrade(request);
           await wsService.addListener(soc);
-        } on Exception catch (e) {
-          print(e);
+        } on Exception  {
+            //TODO: ADD ERROR
         }
       } else if (request.uri.toString().split("?").first == "/socket_request") {
         var conReq = WebSocketConnectRequest(
@@ -154,9 +158,9 @@ class HttpServerService {
             request.response.add(utf8.encode(id));
             await request.response.close();
           }
-        } on Exception catch (e) {
+        } on Exception  {
           await request.response.close();
-          print(e);
+          //TODO: ADD ERROR
         }
       } else if (request.uri.toString().split("?").first == "/upload_video") {
 //          var stream = request.asBroadcastStream();
@@ -218,8 +222,8 @@ class HttpServerService {
         request.response.headers.set('Content-Length', raw.length);
         request.response.add(raw);
         await request.response.close();
-      } on Exception catch (e) {
-        print(e);
+      } on Exception  {
+        //TODO: ADD ERROR
         await request.response.close();
       }
     } else {

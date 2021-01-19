@@ -138,9 +138,6 @@ class AccessToken {
 
   /// Create access token encrypted from user info
   Future<String> _encrypt() async {
-
-    print("ON ENCRYPT  : $authType ");
-
     if (authType == AuthType.guess) {
       _token = await encryptionService.encrypt2(
           data: {'auth_type': 'guess', 'device_id': deviceID});

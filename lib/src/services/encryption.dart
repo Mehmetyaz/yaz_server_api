@@ -3,10 +3,14 @@ import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
 
+///
 EncryptionService encryptionService = EncryptionService();
 
 ///
 class EncryptionService {
+
+
+  ///
   factory EncryptionService() => _service;
   EncryptionService._internal();
   static final EncryptionService _service = EncryptionService._internal();

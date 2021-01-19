@@ -80,9 +80,6 @@ class Operation {
       if (data.data != null &&
           data.data["message_id"] != null &&
           data.data["object_id"] != null) {
-        //TODO: REMOVE
-        print("REMOVE REQUEST RECEIVED:: ${data.data}");
-
         _triggerService.removeListener(
             ObjectId.parse(data.data["object_id"]),
             data.data["message_id"]);
@@ -163,8 +160,8 @@ class Operation {
       try {
         await _customOperations[data.type](listener, data);
         return "ok";
-      } on Exception catch (e) {
-        print("error on custom operation: ${data.type}\n$e");
+      } on Exception {
+        //TODO: ADD ERROR
         return "error";
       }
     } else {

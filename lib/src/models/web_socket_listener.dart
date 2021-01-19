@@ -54,8 +54,8 @@ Future<SocketData> waitMessage(Stream stream,
         } else {
           return true;
         }
-      } on Exception catch (e) {
-        print(e);
+      } on Exception {
+        //TODO:ADD ERROR ON ANALYSIS
         completer.complete(null);
         return false;
       }
@@ -100,9 +100,9 @@ void sendMessage(WebSocket webSocket, SocketData socketData,
       if (onError != null) onError();
       // print("SEND AND WAIT MESSAGE IN CLOSED: ${socketData.fullData}");
     }
-  } on Exception catch (e) {
+  } on Exception  {
     if (onError != null) onError();
-    print("HATA : $e");
+    //TODO:ADD ERROR ANALYSIS
   }
 }
 
@@ -118,8 +118,9 @@ Future<SocketData> sendAndWaitMessage(
   try {
     // print("SEND AND WAIT MESSAGE IN : ${socketData.fullData}");
     sendMessage(socketListener.client, socketData, onError: onError);
-  } on Exception catch (e) {
-    print("$e");
+  } on Exception {
+
+    //TODO: ADD ERROR
     return null;
   }
   return waitMessage(
@@ -234,7 +235,6 @@ class WebSocketListener {
     await subscription.cancel();
     await streamController.close();
     await service.closeListener(this);
-    print("all ok");
   }
 
   ///Check this client
@@ -353,7 +353,6 @@ class WebSocketListener {
           }),
           waitingType: 'c_nonce_sending',
           anyID: true);
-      print("stage3 received1 : ${stage3Data.data}");
       // print('STAGE 3 : $stage3Data');
       if (stage3Data == null ||
           stage3Data.fullData == null ||
@@ -370,7 +369,6 @@ class WebSocketListener {
 
       ///decrypt stage3 data
       await stage3Data.decrypt(nonce, cnonce);
-      print("stage3 received : ${stage3Data.data}");
       // print(stage3Data.data);
       if (stage3Data.data['auth_type'] == null) {
         return false;
@@ -459,12 +457,13 @@ class WebSocketListener {
             }).encrypt(nonce, cnonce));
         return true;
       }
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
+      //TODO:ADD ERROR
       return false;
     }
   }
 
+  ///
   StreamSubscription subscription;
 
   ///Listen this connection
@@ -483,7 +482,7 @@ class WebSocketListener {
             }
             var data = SocketData.fromSocket(event);
 
-            print(data.fullData);
+
 
             if (data.type == 'error') {
               sendMessage(client, data);
@@ -500,15 +499,15 @@ class WebSocketListener {
                   }
 
                   await operation.operate(this, data);
-                } on Exception catch (e) {
-                  print(e);
+                } on Exception {
+                  // TODO:ADD ERROR
                 }
               } else {
                 // print('DATA NULLLL : ${data.data}');
               }
             }
-          } catch (e) {
-            print(e);
+          } on Exception {
+            // TODO:ADD ERROR
           }
         },
         onError: (e) async {

@@ -175,7 +175,6 @@ class ChatService {
           ? _onlineUsers[chatDoc["receiver_id"]]
           : _onlineUsers[chatDoc["starter_id"]];
 
-      print("message sent to : ${l.entries.map((e) => e.key)}");
 
       for (var _listener in l.entries) {
         sendMessageToOnline(_listener.value, isStarter, socketData.data["message"]);
@@ -186,16 +185,17 @@ class ChatService {
   }
 
   ///
+  // ignore: avoid_positional_boolean_parameters
   void sendSeenToOnline(WebSocketListener _listener, bool isStarter,
       Map<String, dynamic> chatDoc) {
     sendAndWaitMessage(
         _listener, SocketData.create(data: chatDoc..["type"] = "message_seen", type: "stream_chat"),
         waitingType: "stream_chat_received", anyID: true, onError: () {
-      print("ONERROR");
+
       removeOnline(_listener.userId, _listener);
       // _addUserChatDoc(chatDoc, isStarter);
     }, onTimeout: () {
-      print("ONERROR1");
+
       removeOnline(_listener.userId, _listener);
       // _addUserChatDoc(chatDoc, isStarter);
     });
@@ -211,11 +211,11 @@ class ChatService {
             data: chatDoc..["type"] = "new_message", type: "stream_chat"),
         waitingType: "stream_chat_received",
         anyID: true, onError: () {
-      print("ONERROR");
+
       removeOnline(_listener.userId, _listener);
       // _addUserChatDoc(chatDoc, isStarter);
     }, onTimeout: () {
-      print("ONERROR1");
+
       removeOnline(_listener.userId, _listener);
       // _addUserChatDoc(chatDoc, isStarter);
     });
@@ -255,7 +255,9 @@ class ChatService {
 
       sendMessage(listener.client,
           socketData.response({"document": doc})..success = true);
-    } on Exception catch (e) {}
+    } on Exception {
+      //TODO: ADD ERROR
+    }
   }
 
   ///
@@ -302,6 +304,8 @@ class ChatService {
 
       sendMessage(listener.client,
           socketData.response({"list": resList})..success = true);
-    } on Exception catch (e) {}
+    } on Exception {
+      //TODO: ADD ERROR
+    }
   }
 }

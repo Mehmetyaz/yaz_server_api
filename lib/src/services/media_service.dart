@@ -67,7 +67,7 @@ class MediaService {
   ///images saved (if higher than) 200 , 700 , original size and story size
   ///return image id
   Future<String> addImage(Uint8List bytes, String id) async {
-    var start = DateTime.now();
+
     var separator = path.separator;
 
     var image = decodeImage(bytes);
@@ -76,9 +76,9 @@ class MediaService {
     //
     // print(image.width);
 
-    var start2 = DateTime.now();
+
     var normalizedImage = normalizeImageForStory(image);
-    var end2 = DateTime.now();
+
     // print("Took Normalize ${end2.difference(start2).inMilliseconds}ms");
 
     Image thumb;
@@ -138,7 +138,7 @@ class MediaService {
         .create(recursive: true);
     await newFile4.writeAsBytes(normalizedImage);
 
-    var end = DateTime.now();
+
     //
     // print("Took ${end.difference(start).inMilliseconds}ms");
 

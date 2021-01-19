@@ -25,10 +25,6 @@ class SocketData {
   factory SocketData.fromJson(Map<String, dynamic> data) =>
       SocketData.fromFullData(data);
 
-  ///
-  SocketData response(Map<String, dynamic> data){
-    return SocketData.create(data: data, type: type ,messageId: messageId);
-  }
 
 
 
@@ -63,6 +59,10 @@ class SocketData {
     String rawData,
   ) {
     return SocketData.fromFullData(json.decode(rawData));
+  }
+  ///
+  SocketData response(Map<String, dynamic> data){
+    return SocketData.create(data: data, type: type ,messageId: messageId);
   }
 
   ///

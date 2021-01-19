@@ -3,10 +3,10 @@ library yaz_server_api;
 import 'dart:io';
 
 import 'package:meta/meta.dart';
-import 'package:yaz_server_api/src/services/encryption.dart';
-import 'package:yaz_server_api/src/services/mongo_db_service.dart';
 
+import 'src/services/encryption.dart';
 import 'src/services/https_server.dart';
+import 'src/services/mongo_db_service.dart';
 
 export 'src/extensions/date_time.dart';
 export 'src/models/listener.dart';

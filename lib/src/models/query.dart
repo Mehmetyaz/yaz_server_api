@@ -186,11 +186,9 @@ class Query {
     /// Equals
     for (var eq in equals.entries) {
       if (_first) {
-        print(eq.value.runtimeType);
         if (eq.value is List<dynamic> ||
             eq.value is Iterable ||
             eq.value is List<String>) {
-          print("ITERABLE:");
           for (var e in eq.value) {
             if (_first) {
               builder.eq(eq.key, e);
@@ -203,11 +201,9 @@ class Query {
           builder.eq(eq.key, eq.value);
         }
       } else {
-        print(eq.value.runtimeType);
         if (eq.value is List<dynamic> ||
             eq.value is Iterable ||
             eq.value is List<String>) {
-          print("ITERABLE");
           for (var e in eq.value) {
             builder.or(where.eq(eq.key, e));
           }
@@ -221,11 +217,9 @@ class Query {
     /// Not Equals
     for (var notEq in notEquals.entries) {
       if (_first) {
-        print(notEq.value.runtimeType);
         if (notEq.value is List<dynamic> ||
             notEq.value is Iterable ||
             notEq.value is List<String>) {
-          print("ITERABLE:");
           for (var e in notEq.value) {
             if (_first) {
               builder.ne(notEq.key, e);
@@ -238,11 +232,10 @@ class Query {
           builder.ne(notEq.key, notEq.value);
         }
       } else {
-        print(notEq.value.runtimeType);
         if (notEq.value is List<dynamic> ||
             notEq.value is Iterable ||
             notEq.value is List<String>) {
-          print("ITERABLE");
+
           for (var e in notEq.value) {
             builder.or(where.ne(notEq.key, e));
           }
@@ -316,8 +309,6 @@ class Query {
         }
       }
     }
-
-    print("QUERY: ${builder.map}");
 
     return builder;
   }

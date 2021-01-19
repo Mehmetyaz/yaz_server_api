@@ -19,6 +19,7 @@ class TokenDecryptedError implements Error {
       StackTrace.fromString('Token must be decrypted when permission checked');
 }
 
+///
 MongoDb mongoDb = MongoDb();
 
 ///Mongo Db Service
@@ -32,6 +33,7 @@ class MongoDb {
   static final MongoDb _instance = MongoDb._internal();
 
   bool _connected = false;
+  ///
   Db mongoDb;
 
   //  String _hostName = 'mongodb://127.0.0.1';
@@ -44,12 +46,14 @@ class MongoDb {
   Function _initialFunction;
 
   ///
-  void init(String address, {Function initial}) async {
+  Future<void> init(String address, {Function initial}) async {
     _address = address;
     mongoDb = Db(_address);
     _initialFunction = initial;
 
     await connect();
+
+    // ignore: avoid_print
     print("Mongo Connected: ${mongoDb.isConnected}");
   }
 
@@ -298,11 +302,10 @@ class MongoDb {
       // ignore: avoid_catching_errors
     } on MongoDartError {
       ///Connection Exception - Try one more
-      print('MONGO DART EXCEPTION . Type: $MongoDartError');
+
       var msg = await connect();
       if (_connected) {
-        ///Success trying connect
-        print('CONNECTED');
+
         // ignore: avoid_catching_errors
         try {
           ///Try Operation
@@ -321,6 +324,7 @@ class MongoDb {
           }
           // ignore: avoid_catches_without_on_clauses
         } catch (e) {
+          //TODO: ADD ERROR
           // ignore: lines_longer_than_80_chars
           // print('CONNECTED AND ERROR AGAIN . type :'
           //     ' ${e.runtimeType} , message : ${e.toString()}');
@@ -332,12 +336,12 @@ class MongoDb {
         }
       } else {
         ///unsuccessful connection
-        print('CONNECT UNSUCCESSFUL . message : $msg');
+        //TODO: ADD ERROR
         return SocketData.fromFullData(
             {"success": false, "reason": msg ?? "Undefined Error"}).data;
       }
     } on Exception catch (e) {
-      print('ERROR  . type : ${e.runtimeType} , message : ${e.toString()}');
+      //TODO: ADD ERROR
 
       ///Other Exception
       return SocketData.fromFullData(

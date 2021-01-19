@@ -4,6 +4,7 @@ import '../models/socket_types.dart';
 
 import '../models/web_socket_listener.dart';
 
+///
 WebSocketService socketService = WebSocketService();
 
 
@@ -40,7 +41,7 @@ class WebSocketService {
     } else {
       await closeListener(listener);
     }
-    print("ADDED: $activeListenerCount");
+
   }
 
   ///

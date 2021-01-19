@@ -1,4 +1,4 @@
-import 'package:yaz_server_api/src/models/token/token.dart';
+
 
 import '../models/query.dart';
 import 'mongo_db_service.dart';
@@ -30,6 +30,7 @@ Map<String, Map<MongoDbOperationType, Checker>> _defaultPermissionChecker(
 ///
 typedef Checker = Future<bool> Function();
 
+///
 PermissionHandler permissionHandler = PermissionHandler();
 
 ///
@@ -70,6 +71,7 @@ class PermissionHandler {
   }
 
   ///Increment Limit
+  // ignore: comment_references
   ///If [min] or [max] is [null] don't control and return true
   ///
   ///Include [max] and  [min]
