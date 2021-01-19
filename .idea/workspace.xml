@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0549c849-1435-46bb-aab7-e3137d20d1a3" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1mINYLscMv9AXlXrjvAKF0SfFJ4" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Flutter\yaz_server_api\lib\src\services" />
+      <recent name="C:\Flutter\yaz_server_api\lib\src" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0549c849-1435-46bb-aab7-e3137d20d1a3" name="Default Changelist" comment="" />
+      <created>1609177192011</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1609177192011</updated>
+      <workItem from="1609177193550" duration="78000" />
+      <workItem from="1609178043236" duration="3987000" />
+      <workItem from="1609405113656" duration="1093000" />
+      <workItem from="1609406294187" duration="2946000" />
+      <workItem from="1609518310505" duration="3780000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2932" y="-101" key="FileChooserDialogImpl" timestamp="1610475721562">
+      <screen x="2400" y="-323" width="1440" height="860" />
+    </state>
+    <state x="2932" y="-101" key="FileChooserDialogImpl/2400.-323.1440.860/0.0.1536.824@2400.-323.1440.860" timestamp="1610475721562" />
+    <state x="3021" y="-248" key="FileChooserDialogImpl/2400.-509.1680.1010/0.0.1536.824@2400.-509.1680.1010" timestamp="1610262720270" />
+    <state x="277" y="57" key="SettingsEditor" timestamp="1609702160817">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="277" y="57" key="SettingsEditor/1920.-407.1680.1000/0.0.1536.824@0.0.1536.824" timestamp="1609702160817" />
+  </component>
+</project>
