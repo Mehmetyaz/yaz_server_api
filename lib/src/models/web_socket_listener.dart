@@ -9,6 +9,7 @@ import '../services/encryption.dart';
 import '../services/mongo_db_service.dart';
 import '../services/operations.dart';
 import '../services/ws_service.dart';
+import 'query.dart';
 import 'socket_data_model.dart';
 import 'socket_types.dart';
 import 'statics.dart';
@@ -100,7 +101,7 @@ void sendMessage(WebSocket webSocket, SocketData socketData,
       if (onError != null) onError();
       // print("SEND AND WAIT MESSAGE IN CLOSED: ${socketData.fullData}");
     }
-  } on Exception  {
+  } on Exception {
     if (onError != null) onError();
     //TODO:ADD ERROR ANALYSIS
   }
@@ -119,7 +120,6 @@ Future<SocketData> sendAndWaitMessage(
     // print("SEND AND WAIT MESSAGE IN : ${socketData.fullData}");
     sendMessage(socketListener.client, socketData, onError: onError);
   } on Exception {
-
     //TODO: ADD ERROR
     return null;
   }
@@ -387,8 +387,8 @@ class WebSocketListener {
               .encryptedToken;
 
           isLogged = true;
-          userId =  userData['open']['user_id'];
-          chatService.addOnline( userId, this);
+          userId = userData['open']['user_id'];
+          chatService.addOnline(userId, this);
           var sending = SocketData.fromFullData({
             'message_id': secondID,
             'message_type': 'token_sending',
@@ -434,6 +434,80 @@ class WebSocketListener {
                 }
               }));
           return true;
+        }
+
+        /// if auth type admin
+      } else if (stage3Data.data['auth_type'] == '_admin') {
+        var isAdmin = (await db.exists(Query.allowAll(
+          queryType: QueryType.exists,
+          equals: {"mail": stage3Data.data["user_mail"]},
+        )))["exists"];
+
+        if (!isAdmin) {
+          var userData = await db.confirmUser(stage3Data.data, deviceID);
+          if (userData != null && userData['success']) {
+            // print("USER CONFIRMED : $userData");
+
+            ///User Confirmed
+            var token = await AccessToken.generateForUser(
+                    authType: AuthType.admin,
+                    deviceID: deviceID,
+                    mail: userData['open']['user_mail'],
+                    passWord: stage3Data.data['password'],
+                    uId: userData['open']['user_id'])
+                .encryptedToken;
+
+            isLogged = true;
+            userId = userData['open']['user_id'];
+            chatService.addOnline(userId, this);
+            var sending = SocketData.fromFullData({
+              'message_id': secondID,
+              'message_type': 'token_sending',
+              'success': true,
+              'data': {
+                'token': token,
+                'timestamp': DateTime.now().millisecondsSinceEpoch,
+                'timeout': 30,
+                'auth_type': 'admin',
+                'user_data': userData['open']
+              }
+            });
+
+            // print(
+            //"ACCESS::: ${await AccessToken.fromToken(token).decryptToken()}");
+
+            // print("SENDING DATA STAGE 4 : ${sending.fullData}");
+
+            await sending.encrypt(nonce, cnonce);
+
+            ///Send token
+            sendMessage(client, sending);
+            return true;
+          } else {
+            // print("USER NOT CONFIRMED");
+
+            ///User Confirmed
+            var token =
+                await AccessToken.generateForGuess(AuthType.guess, deviceID)
+                    .encryptedToken;
+
+            sendMessage(
+                client,
+                SocketData.fromFullData({
+                  'message_id': secondID,
+                  'message_type': 'token_sending',
+                  'success': true,
+                  'data': {
+                    'token': token,
+                    'timestamp': DateTime.now().millisecondsSinceEpoch,
+                    'timeout': 30,
+                    'auth_type': 'guess'
+                  }
+                }));
+            return true;
+          }
+        } else {
+          throw Exception("Not Admin");
         }
       } else {
         stage3Data.data['timestamp'] = DateTime.now().millisecondsSinceEpoch;
@@ -481,8 +555,6 @@ class WebSocketListener {
               // print(utf8.decode(event));
             }
             var data = SocketData.fromSocket(event);
-
-
 
             if (data.type == 'error') {
               sendMessage(client, data);

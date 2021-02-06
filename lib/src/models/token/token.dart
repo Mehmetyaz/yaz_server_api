@@ -11,6 +11,9 @@ enum AuthType {
   loggedIn,
 
   ///
+  admin,
+
+  ///
   undefined
 }
 
@@ -39,7 +42,7 @@ class AccessToken {
         _token = null,
         assert(authType != null, 'Auth Type must\'nt be null or undefined'),
         assert(
-            authType == AuthType.loggedIn,
+            authType == AuthType.loggedIn || authType == AuthType.admin,
             'This constructor for used only logged user '
             'Please use [.generateForGuess] constructor for guess'),
         assert(mail != null, 'Mail Address must\'nt be null'),

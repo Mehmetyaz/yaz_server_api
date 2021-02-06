@@ -76,13 +76,43 @@ class Operation {
             'data': _dbRes['open']
           }).encrypt(listener.nonce, listener.cnonce));
       return 'ok';
+    } else if (data.type == 'login_admin') {
+      var _dbRes = await _db.confirmUser(data.data, listener.deviceID);
+
+      var isAdmin = (await _db.exists(Query.allowAll(
+        queryType: QueryType.exists,
+        equals: {"mail": _dbRes['secret']['user_mail']},
+      )))["exists"];
+      if (!isAdmin) {
+        return "false";
+      }
+      AccessToken token;
+      if (_dbRes['success']) {
+        token = AccessToken.generateForUser(
+            authType: AuthType.admin,
+            mail: _dbRes['secret']['user_mail'],
+            deviceID: listener.deviceID,
+            uId: _dbRes['open']['user_id'],
+            passWord: _dbRes['secret']['password']);
+        _dbRes['open']['token'] = await token.encryptedToken;
+      }
+      // print(_dbRes['open']);
+
+      sendMessage(
+          listener.client,
+          await SocketData.fromFullData({
+            'message_id': data.messageId,
+            'message_type': data.type,
+            'success': _dbRes['success'],
+            'data': _dbRes['open']
+          }).encrypt(listener.nonce, listener.cnonce));
+      return 'ok';
     } else if (data.type == "remove_stream") {
       if (data.data != null &&
           data.data["message_id"] != null &&
           data.data["object_id"] != null) {
         _triggerService.removeListener(
-            ObjectId.parse(data.data["object_id"]),
-            data.data["message_id"]);
+            ObjectId.parse(data.data["object_id"]), data.data["message_id"]);
       }
       return "ok";
     } else if (data.type == 'query') {

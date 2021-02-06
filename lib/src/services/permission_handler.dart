@@ -1,5 +1,7 @@
 
 
+import 'package:yaz_server_api/src/models/token/token.dart';
+
 import '../models/query.dart';
 import 'mongo_db_service.dart';
 
@@ -168,15 +170,20 @@ class PermissionHandler {
   ///
   Future<bool> check(Query query) async {
     if (query.allowAll) return true;
+
+    if (query.token == null) throw Exception('Token Must Not Be Null');
+
+    if (!query.token.isDecrypted) await query.token.decryptToken();
+
+
+    if (query.collection.startsWith("_")) {
+      return query.token.authType == AuthType.admin;
+    }
     if (query == null) throw Exception('Query Must Not be null');
 
     if (query.operationType == null) {
       throw Exception('Query Type Must Not be null');
     }
-
-    if (query.token == null) throw Exception('Token Must Not Be Null');
-
-    if (!query.token.isDecrypted) await query.token.decryptToken();
 
     if (query.operationType == MongoDbOperationType.update) {
       if (resource == null) {
@@ -193,27 +200,4 @@ class PermissionHandler {
     }
     return _checkRule(query);
   }
-
- /* ///
-  Future<bool> checkMessagePermission(Query query) async {
-    var l = query.collection.split("-");
-    if (!query.token.isDecrypted) {
-      await query.token.decryptToken();
-    }
-    if (query.token.authType != AuthType.loggedIn) {
-      return false;
-    }
-
-    if (query.queryType == QueryType.update) {
-      return (query.equals["type"] != null &&
-              query.equals["type"] == "conversation_info") ||
-          (query.equals["type"]);
-    }
-
-    if (query.operationType == MongoDbOperationType.delete) {
-      return false;
-    }
-
-    return l.contains(query.token.uId);
-  }*/
 }
