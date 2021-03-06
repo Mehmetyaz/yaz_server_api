@@ -15,6 +15,7 @@ class WebSocketService {
 
   ///Singleton Bloğu
   WebSocketService._internal();
+
   static final WebSocketService _service = WebSocketService._internal();
 
   ///Waiting Web Socket Connect Request
@@ -32,7 +33,8 @@ class WebSocketService {
   Future<void> addListener(WebSocket client) async {
     var listener = WebSocketListener(client);
     await listener.listen();
-    if (await listener.connectionRequest()) {
+    if ((await listener.connectionRequest().onError((error,
+        stackTrace) => false) ?? false)) {
       if (activeListeners.contains(listener)) {
         activeListeners.remove(listener);
         await closeListener(listener);
@@ -41,13 +43,12 @@ class WebSocketService {
     } else {
       await closeListener(listener);
     }
-
   }
 
   ///
   Future<void> clear() async {
     var newL = List.from(activeListeners);
-    for (var l in newL){
+    for (var l in newL) {
       await closeListener(l);
     }
   }

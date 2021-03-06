@@ -1,8 +1,7 @@
 
 
-import 'package:yaz_server_api/src/models/token/token.dart';
-
 import '../models/query.dart';
+import '../models/token/token.dart';
 import 'mongo_db_service.dart';
 
 ///Mongo Db Operation Type
@@ -175,6 +174,8 @@ class PermissionHandler {
 
     if (!query.token.isDecrypted) await query.token.decryptToken();
 
+
+    //TODO: Starts  with * : so implement chat doc
 
     if (query.collection.startsWith("_")) {
       return query.token.authType == AuthType.admin;

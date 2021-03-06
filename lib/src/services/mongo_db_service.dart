@@ -33,6 +33,7 @@ class MongoDb {
   static final MongoDb _instance = MongoDb._internal();
 
   bool _connected = false;
+
   ///
   Db mongoDb;
 
@@ -305,7 +306,6 @@ class MongoDb {
 
       var msg = await connect();
       if (_connected) {
-
         // ignore: avoid_catching_errors
         try {
           ///Try Operation
@@ -429,7 +429,7 @@ class MongoDb {
 
       // print("INSERT QUERY : : $dat");
       if (dat != null) {
-        dat['success'] = true;
+        dat["success"] = true;
         return dat;
       } else {
         return {'success': false, 'error': 'data_is_null'};

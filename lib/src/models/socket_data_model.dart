@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cryptography/cryptography.dart';
 import 'package:meta/meta.dart';
 
 import '../services/encryption.dart';

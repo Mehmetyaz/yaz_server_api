@@ -1,18 +1,42 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
+
+///
+class Nonce {
+  ///
+  Nonce(List<int> bytes) : _list = bytes as Uint8List;
+
+  ///
+  Nonce.random() : _list = _random;
+
+  static Uint8List get _random {
+    var res = Uint8List(12);
+    for (var i = 0; i < res.length; i++) {
+      res[i] = Random().nextInt(255);
+    }
+    return res;
+  }
+
+  ///
+  final Uint8List _list;
+
+  ///
+  Uint8List get list => _list;
+}
 
 ///
 EncryptionService encryptionService = EncryptionService();
 
 ///
 class EncryptionService {
-
-
   ///
   factory EncryptionService() => _service;
+
   EncryptionService._internal();
+
   static final EncryptionService _service = EncryptionService._internal();
 
   String __clientSecretKey1,
@@ -35,6 +59,21 @@ class EncryptionService {
     __deviceIdSecretKey = deviceIdSecretKey;
   }
 
+  ///
+  Uint8List mergeMac(SecretBox secretBox) {
+    return Uint8List.fromList(
+        []..addAll(secretBox.mac.bytes)..addAll(secretBox.cipherText));
+  }
+
+  ///
+  SecretBox splitMac(List<int> nonce, Uint8List list) {
+    return SecretBox(list.sublist(16),
+        nonce: nonce, mac: Mac(list.sublist(0, 16)));
+  }
+
+  ///1
+  Chacha20 get chacha20Poly1305Aead => Chacha20.poly1305Aead();
+
   Future<Uint8List> _enc1Stage1(Nonce nonce, Uint8List data) async {
     final cipher = chacha20Poly1305Aead;
 
@@ -44,10 +83,10 @@ class EncryptionService {
     final encrypted = await cipher.encrypt(
       message,
       secretKey: secretKey,
-      nonce: nonce,
+      nonce: nonce.list,
       aad: [12, 12, 10],
     );
-    return encrypted;
+    return mergeMac(encrypted);
   }
 
   Future<Uint8List> _enc1Stage2(Nonce cnonce, Uint8List data) async {
@@ -59,11 +98,11 @@ class EncryptionService {
     final encrypted = await cipher.encrypt(
       message,
       secretKey: secretKey,
-      nonce: cnonce,
+      nonce: cnonce.list,
       aad: [12, 12, 10],
     );
 
-    return encrypted;
+    return mergeMac(encrypted);
   }
 
   ///Encrypt 1
@@ -79,9 +118,11 @@ class EncryptionService {
 
     /// Choose some 256-bit secret key
     final secretKey = SecretKey(__clientSecretKey2.codeUnits);
-    final message = encryptedData;
-    final encrypted = await cipher.decrypt(message,
-        secretKey: secretKey, nonce: cnonce, aad: [12, 12, 10]);
+
+    var message = splitMac(cnonce.list, encryptedData);
+
+    final encrypted =
+        await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
     return encrypted;
   }
 
@@ -90,9 +131,11 @@ class EncryptionService {
 
     /// Choose some 256-bit secret key
     final secretKey = SecretKey(__clientSecretKey1.codeUnits);
-    final message = data;
+
+    final message = splitMac(nonce.list, data);
+
     final encrypted = await cipher.decrypt(message,
-        secretKey: secretKey, nonce: nonce, aad: [12, 12, 10]);
+        secretKey: secretKey /*, nonce: nonce*/, aad: [12, 12, 10]);
 
     return encrypted;
   }
@@ -113,10 +156,10 @@ class EncryptionService {
     final encrypted = await cipher.encrypt(
       message,
       secretKey: secretKey,
-      nonce: nonce,
+      nonce: nonce.list,
       aad: [12, 12, 10],
     );
-    return encrypted;
+    return mergeMac(encrypted);
   }
 
   Future<Uint8List> _enc2Stage2(Nonce cnonce, Uint8List data) async {
@@ -128,11 +171,11 @@ class EncryptionService {
     final encrypted = await cipher.encrypt(
       message,
       secretKey: secretKey,
-      nonce: cnonce,
+      nonce: cnonce.list,
       aad: [12, 12, 10],
     );
 
-    return encrypted;
+    return mergeMac(encrypted);
   }
 
   ///Encrypt 2
@@ -149,9 +192,9 @@ class EncryptionService {
 
     /// Choose some 256-bit secret key
     final secretKey = SecretKey(__tokenSecretKey2.codeUnits);
-    final message = encryptedData;
-    final encrypted = await cipher.decrypt(message,
-        secretKey: secretKey, nonce: cnonce, aad: [12, 12, 10]);
+    final message = splitMac(cnonce.list, encryptedData);
+    final encrypted =
+        await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
     return encrypted;
   }
 
@@ -160,9 +203,9 @@ class EncryptionService {
 
     /// Choose some 256-bit secret key
     final secretKey = SecretKey(__tokenSecretKey1.codeUnits);
-    final message = data;
-    final encrypted = await cipher.decrypt(message,
-        secretKey: secretKey, nonce: nonce, aad: [12, 12, 10]);
+    final message = splitMac(nonce.list, data);
+    final encrypted =
+        await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
 
     return encrypted;
   }
@@ -176,19 +219,20 @@ class EncryptionService {
             base64.decode(data)))));
   }
 
-  ///Encrypt 3
+  ///Encrypt 3 For Token
   Future<String> encrypt3(Map<String, dynamic> data) async {
     final cipher = chacha20Poly1305Aead;
 
     /// Choose some 256-bit secret key
     final secretKey = SecretKey(__tokenSecretKey2.codeUnits);
+
     final encrypted = await cipher.encrypt(
       utf8.encode(json.encode(data)),
       secretKey: secretKey,
-      nonce: Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]),
+      nonce: Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]).list,
       aad: [12, 12, 10],
     );
-    return base64.encode(encrypted);
+    return base64.encode(mergeMac(encrypted));
   }
 
   ///Decrypt 3
@@ -197,10 +241,13 @@ class EncryptionService {
 
     /// Choose some 256-bit secret key
     final secretKey = SecretKey(__tokenSecretKey2.codeUnits);
-    final encrypted = await cipher.decrypt(base64.decode(encryptedText),
-        secretKey: secretKey,
-        nonce: Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]),
-        aad: [12, 12, 10]);
+
+    final message = splitMac(
+        Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]).list,
+        base64.decode(encryptedText));
+
+    final encrypted =
+        await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
 
     return json.decode(utf8.decode(encrypted));
   }
@@ -211,10 +258,13 @@ class EncryptionService {
 
     /// Choose some 256-bit secret key
     final secretKey = SecretKey(__deviceIdSecretKey.codeUnits);
-    final encrypted = await cipher.decrypt(base64.decode(data),
-        secretKey: secretKey,
-        nonce: Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]),
-        aad: [12, 12, 10]);
+
+    var message = splitMac(
+        Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]).list,
+        base64.decode(data));
+
+    final encrypted =
+        await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
 
     return utf8.decode(encrypted);
   }
@@ -228,9 +278,9 @@ class EncryptionService {
     final encrypted = await cipher.encrypt(
       utf8.encode(data),
       secretKey: secretKey,
-      nonce: Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]),
+      nonce: Nonce(<int>[54, 12, 89, 74, 5, 69, 8, 23, 14, 5, 89, 22]).list,
       aad: [12, 12, 10],
     );
-    return base64.encode(encrypted);
+    return base64.encode(mergeMac(encrypted));
   }
 }

@@ -3,7 +3,8 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:cryptography/cryptography.dart';
+
+import '../../yaz_server_api.dart';
 // ignore_for_file: prefer_constructors_over_static_methods
 ///Static functions
 mixin Statics  {
