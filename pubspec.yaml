@@ -1,11 +1,11 @@
 name: yaz_server_api
 description: Yaz Framework Api For Dart Server
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/Mehmetyaz/yaz_client.git
 repository: https://github.com/Mehmetyaz/yaz_client.git
 
 environment:
-  sdk: '>=2.10.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 
 dependencies:

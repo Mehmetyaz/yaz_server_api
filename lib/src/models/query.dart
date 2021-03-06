@@ -27,16 +27,12 @@ MongoDbOperationType mongoDbOperationTypeCast(String type) {
   switch (type) {
     case 'read':
       return MongoDbOperationType.read;
-      break;
     case 'update':
       return MongoDbOperationType.update;
-      break;
     case 'delete':
       return MongoDbOperationType.delete;
-      break;
     case 'create':
       return MongoDbOperationType.create;
-      break;
   }
   return MongoDbOperationType.read;
 }
@@ -63,27 +59,21 @@ enum QueryType {
 }
 
 ///
-MongoDbOperationType operationTypeFromQueryType(QueryType type) {
+MongoDbOperationType operationTypeFromQueryType(QueryType? type) {
   switch (type) {
     case QueryType.query:
       return MongoDbOperationType.read;
-      break;
     case QueryType.listQuery:
       return MongoDbOperationType.read;
-      break;
     case QueryType.insert:
       return MongoDbOperationType.create;
-      break;
     case QueryType.update:
       return MongoDbOperationType.update;
-      break;
     case QueryType.exists:
       return MongoDbOperationType.create;
-      break;
 
     case QueryType.streamQuery:
       return MongoDbOperationType.read;
-      break;
 
     default:
       return MongoDbOperationType.read;
@@ -113,7 +103,7 @@ class Query {
     data = map['document'] ?? null;
     filters = map['filters'] ?? <String, dynamic>{};
     equals = map['equals'] ?? <String, dynamic>{};
-    sorts = sortingCast(map['sorts']) ?? <String, dynamic>{};
+    sorts = sortingCast(map['sorts']);
     update = map['update'] ?? <String, dynamic>{};
     limit = map['limit'] ?? 1000;
     offset = map['offset'] ?? 0;
@@ -136,24 +126,24 @@ class Query {
   final bool allowAll;
 
   ///Access Token
-  final AccessToken token;
+  final AccessToken? token;
 
   ///Query collection
   ///eg users , posts
-  String collection;
+  String? collection;
 
   ///Query document
-  Map<String, dynamic> data;
+  Map<String, dynamic>? data;
 
   ///Query Type
   ///update
   ///create
   ///delete
   ///read
-  MongoDbOperationType operationType;
+  MongoDbOperationType? operationType;
 
   ///
-  final QueryType queryType;
+  final QueryType? queryType;
 
   ///Query filter
   ///
@@ -176,7 +166,7 @@ class Query {
   Map<String, bool> fileds = <String, bool>{};
 
   ///Data counts
-  int limit, offset;
+  int? limit, offset;
 
   ///query to mongo db selector
   SelectorBuilder selector() {
@@ -247,25 +237,25 @@ class Query {
     }
 
     /// Sorts
-    for (MapEntry<String, Sorting> sort in sorts.entries) {
+    for (var sort in sorts.entries) {
       builder.sortBy(sort.key, descending: sort.value == Sorting.descending);
     }
 
     /// Fields
     if (fileds.values.contains(true)) {
-      builder.fields(fileds.keys.where((element) => fileds[element]).toList());
+      builder.fields(fileds.keys.where((element) => fileds[element]!).toList());
     }
 
     /// Exclude Fields
     if (fileds.values.contains(false)) {
       builder.excludeFields(
-          fileds.keys.where((element) => !fileds[element]).toList());
+          fileds.keys.where((element) => !fileds[element]!).toList());
     }
 
     /// Limit and offsets
     builder
-      ..limit(limit)
-      ..skip(offset);
+      ..limit(limit!)
+      ..skip(offset!);
 
     /// Filters
     for (var filt in filters.keys) {
@@ -345,9 +335,9 @@ class Query {
       'collection': collection,
       'document': data,
       'filters': filters,
-      'token': token.uId,
+      'token': token!.uId,
       'equals': equals,
-      'sorts': sortingToInt(sorts),
+      'sorts': sortingToInt(sorts as Map<String, Sorting>),
       'update': update,
       'limit': limit,
       'offset': offset

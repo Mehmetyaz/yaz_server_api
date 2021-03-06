@@ -1,4 +1,5 @@
-import 'package:meta/meta.dart';
+import 'dart:async';
+
 
 import '../../services/encryption.dart';
 
@@ -20,7 +21,7 @@ enum AuthType {
 ///Access Token
 class AccessToken {
   ///
-  AccessToken.generateForGuess(this.authType, this.deviceID)
+  AccessToken.generateForGuess(AuthType this.authType, this.deviceID)
       : isHashed = false,
         isDecrypted = true,
         _token = null,
@@ -32,22 +33,18 @@ class AccessToken {
 
   ///Generate for user
   AccessToken.generateForUser(
-      {@required this.authType,
-      @required this.mail,
+      {required AuthType this.authType,
+      required String this.mail,
       this.deviceID,
-      @required this.uId,
-      @required this.passWord})
+      required String this.uId,
+      required String this.passWord})
       : isHashed = false,
         isDecrypted = true,
         _token = null,
-        assert(authType != null, 'Auth Type must\'nt be null or undefined'),
         assert(
             authType == AuthType.loggedIn || authType == AuthType.admin,
             'This constructor for used only logged user '
-            'Please use [.generateForGuess] constructor for guess'),
-        assert(mail != null, 'Mail Address must\'nt be null'),
-        assert(uId != null, 'User ID must\'nt be null'),
-        assert(passWord != null, 'Password must\'nt be null');
+            'Please use [.generateForGuess] constructor for guess');
 
   ///From Token
   AccessToken.fromToken(this._token)
@@ -67,27 +64,27 @@ class AccessToken {
   bool isHashed;
 
   ///Auth Type
-  AuthType authType;
+  AuthType? authType;
 
   ///user device ID
-  String deviceID;
+  String? deviceID;
 
   ///User ıd  (if logged)
-  String uId;
+  String? uId;
 
   ///user mail (if logged)
-  String mail;
+  String? mail;
 
   ///user password (if logged)
-  String passWord;
+  String? passWord;
 
   ///Token
-  String _token;
+  String? _token;
 
   /// Get Encrypted Token
   /// If Token hashed return token
   /// else once hash
-  Future<String> get encryptedToken async {
+  Future<String?> get encryptedToken async {
     if (isHashed) {
       return _token;
     } else {
@@ -106,12 +103,10 @@ class AccessToken {
   ///Can reach uID, mail , password fields after decrypt
   Future<AccessToken> decryptToken() async {
     if (isHashed) {
-      var data = await _decrypt();
+      var data = await (_decrypt() as FutureOr<Map<String, dynamic>>);
 
-      if (data != null) {
-        isHashed = true;
-        isDecrypted = true;
-      }
+      isHashed = true;
+      isDecrypted = true;
 
       switch (_getAuthType(data['auth_type'])) {
         case AuthType.guess:
@@ -133,14 +128,14 @@ class AccessToken {
     return this;
   }
 
-  Future<Map<String, dynamic>> _decrypt() async {
+  Future<Map<String, dynamic>?> _decrypt() async {
     assert(_token != null, 'Token must not be null for decrypt token');
-    var data = await encryptionService.decrypt2(data: _token);
+    var data = await encryptionService.decrypt2(data: _token!);
     return data;
   }
 
   /// Create access token encrypted from user info
-  Future<String> _encrypt() async {
+  Future<String?> _encrypt() async {
     if (authType == AuthType.guess) {
       _token = await encryptionService.encrypt2(
           data: {'auth_type': 'guess', 'device_id': deviceID});
@@ -165,7 +160,7 @@ class AccessToken {
   //   return _t;
   // }
 
-  static AuthType _getAuthType(String type) {
+  static AuthType _getAuthType(String? type) {
     if (type == 'guess') {
       return AuthType.guess;
     } else if (type == 'auth') {

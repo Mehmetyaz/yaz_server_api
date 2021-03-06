@@ -78,7 +78,7 @@ class PermissionHandler {
   ///Include [max] and  [min]
   ///
   static bool checkIncrementLimit(String field, Map<String, dynamic> request,
-      {num min, num max}) {
+      {num? min, num? max}) {
     if (request['\$inc'] != null) {
       var parsedFieldName = parseField(field);
 
@@ -118,7 +118,7 @@ class PermissionHandler {
     ///         'field.subfield1.subfield2...' : 2
     ///     }
     /// }
-    for (var op in request?.keys) {
+    for (var op in request.keys) {
       /// If update operation key not start update operations
       /// Request denied
       ///
@@ -148,17 +148,17 @@ class PermissionHandler {
   }
 
   ///
-  Future<bool> _checkRule(Query query) async {
+  Future<bool?> _checkRule(Query query) async {
     var checker = permissionChecker(query);
     if (checker.containsKey(query.collection)) {
-      var data = await checker[query.collection][query.operationType]()
+      var data = await checker[query.collection!]![query.operationType!]!()
           .timeout(const Duration(seconds: 5), onTimeout: () {
         return false;
       });
       // print("PERMISSION CHECKED $data");
-      return data ?? defaultRules[query.operationType];
+      return data;
     } else {
-      return defaultRules[query.operationType];
+      return defaultRules[query.operationType!];
     }
   }
 
@@ -167,30 +167,32 @@ class PermissionHandler {
   }*/
 
   ///
-  Future<bool> check(Query query) async {
+  Future<bool?> check(Query query) async {
     if (query.allowAll) return true;
 
     if (query.token == null) throw Exception('Token Must Not Be Null');
 
-    if (!query.token.isDecrypted) await query.token.decryptToken();
+    if (!query.token!.isDecrypted) await query.token!.decryptToken();
 
 
     //TODO: Starts  with * : so implement chat doc
 
-    if (query.collection.startsWith("_")) {
-      return query.token.authType == AuthType.admin;
+    if (query.collection!.startsWith("_")) {
+      return query.token!.authType == AuthType.admin;
     }
-    if (query == null) throw Exception('Query Must Not be null');
+
 
     if (query.operationType == null) {
       throw Exception('Query Type Must Not be null');
     }
 
     if (query.operationType == MongoDbOperationType.update) {
+      // ignore: unnecessary_null_comparison
       if (resource == null) {
         throw Exception('Resource Data must not be null in update query');
       }
     } else if (query.operationType == MongoDbOperationType.delete) {
+      // ignore: unnecessary_null_comparison
       if (resource == null) {
         throw Exception('Resource Data must not be null in update query');
       }

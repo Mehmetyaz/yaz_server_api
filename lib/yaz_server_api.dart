@@ -31,14 +31,14 @@ class YazServerApi {
 
   ///
   static void init(
-      {@required String clientSecretKey1,
-      @required String clientSecretKey2,
-      @required String tokenSecretKey1,
-      @required String tokenSecretKey2,
-      @required String deviceIdSecretKey,
-      @required Future<HttpServer> server,
-      @required String mongoDbAddress,
-      Function initialDb}) {
+      {required String clientSecretKey1,
+      required String clientSecretKey2,
+      required String tokenSecretKey1,
+      required String tokenSecretKey2,
+      required String deviceIdSecretKey,
+      required Future<HttpServer> server,
+      required String mongoDbAddress,
+      Function? initialDb}) {
     encryptionService.init(clientSecretKey1, clientSecretKey2, tokenSecretKey1,
         tokenSecretKey2, deviceIdSecretKey);
     mongoDb.init(mongoDbAddress, initial: initialDb);

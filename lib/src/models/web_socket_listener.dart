@@ -26,7 +26,7 @@ class TimeoutOnWaitingMessageException implements Exception {
 ///Wait Message from stream web socket
 /// [id] or [type] must defined
 Future<SocketData> waitMessage(Stream stream,
-    {String id, String type, Function onTimeout}) async {
+    {String? id, String? type, Function? onTimeout}) async {
   try {
     // print(' $id $type');
     assert(id != null || type != null, "[id] or [type] must defined");
@@ -90,8 +90,8 @@ Future<SocketData> waitMessage(Stream stream,
 }
 
 ///Send Message with defined web socket
-void sendMessage(WebSocket webSocket, SocketData socketData,
-    {Function onError}) {
+void sendMessage(WebSocket? webSocket, SocketData socketData,
+    {Function? onError}) {
   try {
     if (webSocket != null && webSocket.closeCode == null) {
       // print("SEND MESSAGE IN : ${socketData.fullData}");
@@ -107,14 +107,14 @@ void sendMessage(WebSocket webSocket, SocketData socketData,
 }
 
 ///Send and wait message with defined web socket
-Future<SocketData> sendAndWaitMessage(WebSocketListener socketListener,
+Future<SocketData?> sendAndWaitMessage(WebSocketListener socketListener,
     SocketData socketData,
-    {String waitingID,
-      String waitingType,
+    {String? waitingID,
+      String? waitingType,
       bool anyID = false,
       bool anyType = false,
-      Function onError,
-      Function onTimeout}) async {
+      Function? onError,
+      Function? onTimeout}) async {
   try {
     // print("SEND AND WAIT MESSAGE IN : ${socketData.fullData}");
     sendMessage(socketListener.client, socketData, onError: onError);
@@ -141,7 +141,7 @@ Future<SocketData> sendAndWaitMessage(WebSocketListener socketListener,
 class WebSocketListener {
   ///Construct with Client
   WebSocketListener(this.client) {
-    streamController.sink.addStream(client).whenComplete(() {
+    streamController.sink.addStream(client!).whenComplete(() {
       streamController.close();
       //
       // print("controller closed");
@@ -163,7 +163,7 @@ class WebSocketListener {
   bool isLogged = false;
 
   ///
-  String userId;
+  String? userId;
 
   ///Check connection online
   void checkConnection() {
@@ -186,7 +186,7 @@ class WebSocketListener {
   }
 
   ///Socket Client
-  WebSocket client;
+  WebSocket? client;
 
   ///Soketlerin dinleyicisi
   ///her soket için ayrı ayrı oluşturuluyor
@@ -199,7 +199,7 @@ class WebSocketListener {
           "WebSocketListener not have equals operator with : ${other
               .runtimeType}");
     } else {
-      WebSocketListener socketListener = other;
+      WebSocketListener socketListener = other as WebSocketListener;
       return deviceID == socketListener.deviceID;
     }
   }
@@ -212,7 +212,7 @@ class WebSocketListener {
   WebSocketService service = WebSocketService();
 
   ///Connected device id
-  String deviceID;
+  String? deviceID;
 
   ///Stream Controller
   StreamController streamController = StreamController.broadcast();
@@ -224,10 +224,10 @@ class WebSocketListener {
   int unSuccessPermissionRequestCount = 0;
 
   ///Server side nonce for this session
-  Nonce nonce;
+  Nonce? nonce;
 
   ///Client side nonce for this session
-  Nonce cnonce;
+  Nonce? cnonce;
 
   ///Close this connection
   Future<void> close() async {
@@ -240,7 +240,7 @@ class WebSocketListener {
   }
 
   ///Check this client
-  Future<bool> connectionRequest() async {
+  Future<bool?> connectionRequest() async {
     ///Client tarafına benzer şekilde(aynı şekilde )
     ///4 aşamalı bağlantı protokolü var
     try {
@@ -302,12 +302,12 @@ class WebSocketListener {
       ///unique id for each request
       var requestID = stage1Data.messageId;
 
-      if (stage1Data.fullData['device_id'] == null) return null;
+      if (stage1Data.fullData!['device_id'] == null) return null;
 
       ///unique device id
       deviceID =
       await encryptionService.decrypt4(
-          (stage1Data.fullData['device_id']) ?? "");
+          (stage1Data.fullData!['device_id']) ?? "");
 
       // print("DEVICE ID REVEIVED ::: $deviceID");
 
@@ -353,7 +353,7 @@ class WebSocketListener {
           this,
           SocketData.fromFullData({
             'message_id': requestID,
-            'nonce': nonce.list,
+            'nonce': nonce!.list,
             'message_type': 'nonce_sending',
             'success': true,
             'data': {}
@@ -367,19 +367,19 @@ class WebSocketListener {
           stage3Data.messageId == null) {
         throw Exception('Message is null');
       }
-      var secondID = stage3Data.fullData['message_id'];
+      var secondID = stage3Data.fullData!['message_id'];
 
       if (!stage3Data.success) return false;
 
       ///client nonce
-      cnonce = Statics.nonceCast(stage3Data.fullData['c_nonce']);
+      cnonce = Statics.nonceCast(stage3Data.fullData!['c_nonce']);
 
       ///decrypt stage3 data
       await stage3Data.decrypt(nonce, cnonce);
       // print(stage3Data.data);
-      if (stage3Data.data['auth_type'] == null) {
+      if (stage3Data.data!['auth_type'] == null) {
         return false;
-      } else if (stage3Data.data['auth_type'] == 'auth') {
+      } else if (stage3Data.data!['auth_type'] == 'auth') {
         var userData = await db.confirmUser(stage3Data.data, deviceID);
         if (userData != null && userData['success']) {
           // print("USER CONFIRMED : $userData");
@@ -390,7 +390,7 @@ class WebSocketListener {
               authType: AuthType.loggedIn,
               deviceID: deviceID,
               mail: userData['open']['user_mail'],
-              passWord: stage3Data.data['password'],
+              passWord: stage3Data.data!['password'],
               uId: userData['open']['user_id'])
               .encryptedToken;
 
@@ -450,11 +450,11 @@ class WebSocketListener {
         }
 
         /// if auth type admin
-      } else if (stage3Data.data['auth_type'] == '_admin') {
+      } else if (stage3Data.data!['auth_type'] == '_admin') {
         var isAdmin = (await db.exists(Query.allowAll(
           queryType: QueryType.exists,
-          equals: {"mail": stage3Data.data["user_mail"]},
-        )))["exists"];
+          equals: {"mail": stage3Data.data!["user_mail"]},
+        )))!["exists"];
 
         if (!isAdmin) {
           var userData = await db.confirmUser(stage3Data.data, deviceID);
@@ -467,7 +467,7 @@ class WebSocketListener {
                 authType: AuthType.admin,
                 deviceID: deviceID,
                 mail: userData['open']['user_mail'],
-                passWord: stage3Data.data['password'],
+                passWord: stage3Data.data!['password'],
                 uId: userData['open']['user_id'])
                 .encryptedToken;
 
@@ -529,7 +529,7 @@ class WebSocketListener {
           throw Exception("Not Admin");
         }
       } else {
-        stage3Data.data['timestamp'] = DateTime
+        stage3Data.data!['timestamp'] = DateTime
             .now()
             .millisecondsSinceEpoch;
 
@@ -562,7 +562,7 @@ class WebSocketListener {
   }
 
   ///
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
   ///Listen this connection
   Future<void> listen() async {
@@ -622,10 +622,10 @@ class WebSocketListener {
   }
 
   ///Check Timer
-  Timer timer;
+  Timer? timer;
 
   /// Last online time millis epoch
-  int lastOnline;
+  int? lastOnline;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes

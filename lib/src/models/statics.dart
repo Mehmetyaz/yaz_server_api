@@ -17,7 +17,7 @@ mixin Statics  {
   }*/
 
   ///Get random id defined length
-  static String getRandomId(int len) {
+  static String? getRandomId(int len) {
     var _characters =
         'ABCDEFGHIJKLMNOPRSTUQYZXWabcdefghijqklmnoprstuvyzwx0123456789';
     var _listChar = _characters.split('');
@@ -29,7 +29,7 @@ mixin Statics  {
       var _r = _randNum.nextInt(_lentList);
       _randId.add(_listChar[_r]);
     }
-    String id;
+    String? id;
     for (var c in _randId) {
       if (id == null) {
         id = c;

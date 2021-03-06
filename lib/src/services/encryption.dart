@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -7,12 +8,12 @@ import 'package:cryptography/cryptography.dart';
 ///
 class Nonce {
   ///
-  Nonce(List<int> bytes) : _list = bytes as Uint8List;
+  Nonce(List<int> bytes) : _list = bytes;
 
   ///
   Nonce.random() : _list = _random;
 
-  static Uint8List get _random {
+  static List<int> get _random {
     var res = Uint8List(12);
     for (var i = 0; i < res.length; i++) {
       res[i] = Random().nextInt(255);
@@ -21,10 +22,10 @@ class Nonce {
   }
 
   ///
-  final Uint8List _list;
+  final List<int> _list;
 
   ///
-  Uint8List get list => _list;
+  List<int> get list => _list;
 }
 
 ///
@@ -39,7 +40,7 @@ class EncryptionService {
 
   static final EncryptionService _service = EncryptionService._internal();
 
-  String __clientSecretKey1,
+  late String __clientSecretKey1,
       __clientSecretKey2,
       __tokenSecretKey1,
       __tokenSecretKey2,
@@ -107,8 +108,10 @@ class EncryptionService {
 
   ///Encrypt 1
   Future<String> encrypt1(
-      {Nonce cnonce, Nonce nonce, Map<String, dynamic> data}) async {
-    Uint8List _data = utf8.encode(json.encode(data));
+      {required Nonce cnonce,
+      required Nonce nonce,
+      Map<String, dynamic>? data}) async {
+    Uint8List _data = utf8.encode(json.encode(data)) as Uint8List;
     return base64
         .encode(await _enc1Stage2(cnonce, await _enc1Stage1(nonce, _data)));
   }
@@ -123,7 +126,7 @@ class EncryptionService {
 
     final encrypted =
         await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
-    return encrypted;
+    return encrypted as FutureOr<Uint8List>;
   }
 
   Future<Uint8List> _dec1Stage2(Nonce nonce, Uint8List data) async {
@@ -137,12 +140,14 @@ class EncryptionService {
     final encrypted = await cipher.decrypt(message,
         secretKey: secretKey /*, nonce: nonce*/, aad: [12, 12, 10]);
 
-    return encrypted;
+    return encrypted as FutureOr<Uint8List>;
   }
 
   ///Decrypt 2
-  Future<Map<String, dynamic>> decrypt1(
-      {Nonce nonce, Nonce cnonce, String data}) async {
+  Future<Map<String, dynamic>?> decrypt1(
+      {required Nonce nonce,
+      required Nonce cnonce,
+      required String data}) async {
     return json.decode(utf8.decode(await _dec1Stage2(
         nonce, await _dec1Stage1(cnonce, base64.decode(data)))));
   }
@@ -179,8 +184,8 @@ class EncryptionService {
   }
 
   ///Encrypt 2
-  Future<String> encrypt2({Map<String, dynamic> data}) async {
-    Uint8List _data = utf8.encode(json.encode(data));
+  Future<String> encrypt2({Map<String, dynamic>? data}) async {
+    Uint8List _data = utf8.encode(json.encode(data)) as Uint8List;
     return base64.encode(await _enc2Stage2(
         Nonce(<int>[54, 23, 55, 98, 5, 78, 2, 44, 88, 5, 63, 10]),
         await _enc2Stage1(
@@ -195,7 +200,7 @@ class EncryptionService {
     final message = splitMac(cnonce.list, encryptedData);
     final encrypted =
         await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
-    return encrypted;
+    return encrypted as FutureOr<Uint8List>;
   }
 
   Future<Uint8List> _dec2Stage2(Nonce nonce, Uint8List data) async {
@@ -207,11 +212,11 @@ class EncryptionService {
     final encrypted =
         await cipher.decrypt(message, secretKey: secretKey, aad: [12, 12, 10]);
 
-    return encrypted;
+    return encrypted as FutureOr<Uint8List>;
   }
 
   ///Decrypt 2
-  Future<Map<String, dynamic>> decrypt2({String data}) async {
+  Future<Map<String, dynamic>?> decrypt2({required String data}) async {
     return json.decode(utf8.decode(await _dec2Stage2(
         Nonce(<int>[54, 23, 55, 98, 5, 69, 2, 44, 15, 5, 98, 10]),
         await _dec2Stage1(
@@ -236,7 +241,7 @@ class EncryptionService {
   }
 
   ///Decrypt 3
-  Future<Map<String, dynamic>> decrypt3(String encryptedText) async {
+  Future<Map<String, dynamic>?> decrypt3(String encryptedText) async {
     final cipher = chacha20Poly1305Aead;
 
     /// Choose some 256-bit secret key

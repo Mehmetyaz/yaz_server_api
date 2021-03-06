@@ -35,19 +35,19 @@ class MongoDb {
   bool _connected = false;
 
   ///
-  Db mongoDb;
+  late Db mongoDb;
 
   //  String _hostName = 'mongodb://127.0.0.1';
   //  String _port = '9298';
   // String _dbName = 'dikimall-db';
   //  final String _address = '$_hostName:$_port/$_dbName';
 
-  String _address;
+  late String _address;
 
-  Function _initialFunction;
+  Function? _initialFunction;
 
   ///
-  Future<void> init(String address, {Function initial}) async {
+  Future<void> init(String address, {Function? initial}) async {
     _address = address;
     mongoDb = Db(_address);
     _initialFunction = initial;
@@ -240,7 +240,7 @@ class MongoDb {
 
     if (_connected) {
       if (_initialFunction != null) {
-        _initialFunction();
+        _initialFunction!();
       }
       return true;
     } else {
@@ -254,14 +254,12 @@ class MongoDb {
   }
 
   /// Mongo Db Errors
-  static String errorName(String name) {
+  static String errorName(String? name) {
     switch (name) {
       case 'DuplicateKey':
         return 'DuplicateID';
-        break;
       case 'argument_error':
         return 'ArgumentError';
-        break;
       default:
         return 'Undefined Error';
     }
@@ -269,7 +267,7 @@ class MongoDb {
 
   ///
   Future<Map<String, dynamic>> getResource(Query query) {
-    return mongoDb.collection(query.collection).findOne(query.selector());
+    return mongoDb.collection(query.collection!).findOne(query.selector());
   }
 
   ///PermissionHandler
@@ -279,10 +277,10 @@ class MongoDb {
   final TriggerService triggerService = TriggerService();
 
   ///Mongo Db operasyonları standardı kalıp halinde
-  Future<Map<String, dynamic>> _operation(Query query, Interop interop) async {
+  Future<Map<String, dynamic>?> _operation(Query query, Interop interop) async {
     try {
       ///Try Operation
-      if (await permissionHandler.check(query)) {
+      if (await (permissionHandler.check(query) as FutureOr<bool>)) {
         var dat = await triggerService.triggerAndReturn(query, interop);
         //
         // print("DATA ON INTEROP TRIGGER $dat \n"
@@ -310,7 +308,7 @@ class MongoDb {
         try {
           ///Try Operation
 
-          if (await permissionHandler.check(query)) {
+          if (await (permissionHandler.check(query) as FutureOr<bool>)) {
             return await triggerService.triggerAndReturn(query, interop);
           } else {
             // print('Permission Denied for'
@@ -332,13 +330,13 @@ class MongoDb {
           ///Return exception details
           ///should'nt connection error
           return SocketData.fromFullData(
-              {'success': false, 'reason': errorName(e['codeName'])}).data;
+              {'success': false, 'reason': errorName(e.toString())}).data;
         }
       } else {
         ///unsuccessful connection
         //TODO: ADD ERROR
         return SocketData.fromFullData(
-            {"success": false, "reason": msg ?? "Undefined Error"}).data;
+            {"success": false, "reason": msg}).data;
       }
     } on Exception catch (e) {
       //TODO: ADD ERROR
@@ -355,12 +353,13 @@ class MongoDb {
   }
 
   ///Update Operation
-  Future<Map<String, dynamic>> update(Query _query) async {
+  Future<Map<String, dynamic>?> update(Query _query) async {
     return _operation(_query, () async {
-      var dat = await mongoDb.collection(_query.collection).update(
+      var dat = await mongoDb.collection(_query.collection!).update(
           _query.selector(), _query.update,
           upsert: true, writeConcern: WriteConcern.UNACKNOWLEDGED);
       // print("UPDATE QUERY : $dat");
+      // ignore: unnecessary_null_comparison
       if (dat != null) {
         return {
           'success': true,
@@ -373,11 +372,11 @@ class MongoDb {
   }
 
   ///Exist query
-  Future<Map<String, dynamic>> exists(Query query) async {
+  Future<Map<String, dynamic>?> exists(Query query) async {
     return _operation(query, () async {
       var dat =
-          await mongoDb.collection(query.collection).count(query.selector());
-      if (dat != null && dat > 0) {
+          await mongoDb.collection(query.collection!).count(query.selector());
+      if (dat > 0) {
         return {'success': true, 'exists': true};
       } else {
         return {'success': true, 'exists': false};
@@ -386,10 +385,11 @@ class MongoDb {
   }
 
   ///query single document
-  Future<Map<String, dynamic>> query(Query query) async {
+  Future<Map<String, dynamic>?> query(Query query) async {
     return _operation(query, () async {
       var dat =
-          await mongoDb.collection(query.collection).findOne(query.selector());
+          await mongoDb.collection(query.collection!).findOne(query.selector());
+      // ignore: unnecessary_null_comparison
       if (dat != null) {
         dat['success'] = true;
         // print("QUERY RESULT : $dat");
@@ -401,16 +401,17 @@ class MongoDb {
   }
 
   ///List query
-  Future<Map<String, dynamic>> listQuery(Query query) async {
+  Future<Map<String, dynamic>?> listQuery(Query query) async {
     return _operation(query, () async {
       var dat = <String, dynamic>{
         "list": await mongoDb
-            .collection(query.collection)
+            .collection(query.collection!)
             .find(query.selector())
             .toList()
       };
 
       // print("LİST QUERY : $dat \n\n${query.toMap()}");
+      // ignore: unnecessary_null_comparison
       if (dat != null) {
         dat['success'] = true;
         return dat;
@@ -421,11 +422,11 @@ class MongoDb {
   }
 
   ///insert query
-  Future<Map<String, dynamic>> insertQuery(Query query) async {
+  Future<Map<String, dynamic>?> insertQuery(Query query) async {
     // print("INSERT:::::: ${query.data}");
     return _operation(query, () async {
       var dat =
-          await mongoDb.collection(query.collection).insertOne(query.data);
+          await mongoDb.collection(query.collection!).insertOne(query.data!);
 
       // print("INSERT QUERY : : $dat");
       if (dat != null) {
@@ -438,11 +439,11 @@ class MongoDb {
   }
 
   ///add user to db
-  Future<Map<String, dynamic>> addUserToDb(
-      Map<String, dynamic> args, String deviceID) async {
+  Future<Map<String, dynamic>?> addUserToDb(
+      Map<String, dynamic>? args, String? deviceID) async {
     return _operation(Query.allowAll(), () async {
       var secret = <String, dynamic>{
-        'user_mail': args['user_mail'],
+        'user_mail': args!['user_mail'],
         'password': args['password']
       };
 
@@ -469,11 +470,11 @@ class MongoDb {
   }
 
   ///confirm user
-  Future<Map<String, dynamic>> confirmUser(
-      Map<String, dynamic> args, String deviceID) async {
+  Future<Map<String, dynamic>?> confirmUser(
+      Map<String, dynamic>? args, String? deviceID) async {
     return _operation(Query.allowAll(), () async {
       var userD = {
-        'user_mail': args['user_mail'],
+        'user_mail': args!['user_mail'],
         'password': args['password']
       };
       // print(userD);
@@ -489,7 +490,7 @@ class MongoDb {
 
       if (userDataEncrypted != null && userDataEncrypted['data'] != null) {
         var userData =
-            await encryptionService.decrypt3(userDataEncrypted['data']);
+            await (encryptionService.decrypt3(userDataEncrypted['data']) as FutureOr<Map<String, dynamic>>);
 
         // print("Decrypted User Data: $userData");
         if (userData['user_mail'] == args['user_mail'] &&
@@ -519,7 +520,7 @@ class MongoDb {
   }
 
   ///log user connection
-  Future<Map<String, dynamic>> logConnection(Map<String, dynamic> args) async {
+  Future<Map<String, dynamic>?> logConnection(Map<String, dynamic> args) async {
     return _operation(Query.allowAll(), () async {
       var id = Statics.getRandomId(24);
       args['id'] = id;

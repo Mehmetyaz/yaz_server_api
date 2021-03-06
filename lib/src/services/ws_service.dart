@@ -33,7 +33,7 @@ class WebSocketService {
   Future<void> addListener(WebSocket client) async {
     var listener = WebSocketListener(client);
     await listener.listen();
-    if ((await listener.connectionRequest().onError((error,
+    if ((await listener.connectionRequest().onError((dynamic error,
         stackTrace) => false) ?? false)) {
       if (activeListeners.contains(listener)) {
         activeListeners.remove(listener);
@@ -56,14 +56,14 @@ class WebSocketService {
 
   ///
   Future<void> closeListener(WebSocketListener listener) async {
-    if (listener.timer != null && listener.timer.isActive) {
+    if (listener.timer != null && listener.timer!.isActive) {
       // print("timer closed");
-      listener.timer.cancel();
+      listener.timer!.cancel();
     } else {
       // print("timer al closed");
     }
 
-    await listener?.client?.close(3500, 'CLOSING');
+    await listener.client?.close(3500, 'CLOSING');
     // print("nulls ok");
 
     listener
@@ -75,7 +75,6 @@ class WebSocketService {
       await listener.streamController.close();
     }*/
     activeListeners.remove(listener);
-    listener = null;
     // print('REMOVED: $activeListenerCount');
   }
 }

@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 @immutable
 class WebSocketConnectRequest {
   ///
-  WebSocketConnectRequest({this.connectionInfo, this.headers})
+  WebSocketConnectRequest({required HttpConnectionInfo this.connectionInfo, this.headers})
       : id =
             "${connectionInfo.remotePort}:${connectionInfo.remoteAddress.host}";
 
@@ -16,13 +16,13 @@ class WebSocketConnectRequest {
         connectionInfo = null;
 
   ///Request ID
-  final String id;
+  final String? id;
 
   ///Request Headers
-  final HttpHeaders headers;
+  final HttpHeaders? headers;
 
   ///Request info
-  final HttpConnectionInfo connectionInfo;
+  final HttpConnectionInfo? connectionInfo;
 
   @override
   bool operator ==(dynamic other) {

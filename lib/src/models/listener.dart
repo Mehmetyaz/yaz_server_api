@@ -13,23 +13,23 @@ import 'web_socket_listener.dart';
 class DbListener {
   ///
   DbListener(
-      {@required this.messageId,
-      @required this.collection,
-      @required this.id,
-      @required this.listener})
+      {required this.messageId,
+      required this.collection,
+      required this.id,
+      required this.listener})
       : createDate = DateTime.now();
 
   ///
-  final String messageId;
+  final String? messageId;
 
   ///
   final WebSocketListener listener;
 
   ///
-  final ObjectId id;
+  final ObjectId? id;
 
   ///
-  final String collection;
+  final String? collection;
 
   ///
   final DateTime createDate;

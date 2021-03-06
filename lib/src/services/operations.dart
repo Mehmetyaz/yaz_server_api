@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:mongo_dart/mongo_dart.dart';
 
 import '../models/listener.dart';
@@ -54,7 +56,7 @@ class Operation {
           }).encrypt(listener.nonce, listener.cnonce));
       return 'ok';
     } else if (data.type == 'login') {
-      var _dbRes = await _db.confirmUser(data.data, listener.deviceID);
+      var _dbRes = await (_db.confirmUser(data.data, listener.deviceID) as FutureOr<Map<String, dynamic>>);
       AccessToken token;
       if (_dbRes['success']) {
         token = AccessToken.generateForUser(
@@ -77,12 +79,12 @@ class Operation {
           }).encrypt(listener.nonce, listener.cnonce));
       return 'ok';
     } else if (data.type == 'login_admin') {
-      var _dbRes = await _db.confirmUser(data.data, listener.deviceID);
+      var _dbRes = await (_db.confirmUser(data.data, listener.deviceID) as FutureOr<Map<String, dynamic>>);
 
       var isAdmin = (await _db.exists(Query.allowAll(
         queryType: QueryType.exists,
         equals: {"mail": _dbRes['secret']['user_mail']},
-      )))["exists"];
+      )))!["exists"];
       if (!isAdmin) {
         return "false";
       }
@@ -109,19 +111,19 @@ class Operation {
       return 'ok';
     } else if (data.type == "remove_stream") {
       if (data.data != null &&
-          data.data["message_id"] != null &&
-          data.data["object_id"] != null) {
+          data.data!["message_id"] != null &&
+          data.data!["object_id"] != null) {
         _triggerService.removeListener(
-            ObjectId.parse(data.data["object_id"]), data.data["message_id"]);
+            ObjectId.parse(data.data!["object_id"]), data.data!["message_id"]);
       }
       return "ok";
     } else if (data.type == 'query') {
       if (data.data != null) {
-        Query q;
-        Map<String, dynamic> dbResponse;
+        late Query q;
+        Map<String, dynamic>? dbResponse;
         try {
           // print("ON OP: ${data.data}");
-          q = Query.fromMap(data.data['query']);
+          q = Query.fromMap(data.data!['query']);
         } on Exception catch (e) {
           dbResponse = {"success": false, "reason": e.toString()};
         }
@@ -159,6 +161,8 @@ class Operation {
             dbResponse = await _db.query(q);
             isListen = true;
             break;
+          default:
+            break;
         }
 
         // print("DB RESPONSE \nDB RESPONSE \nDB RESPONSE \nDB RESPONSE \n"
@@ -170,7 +174,7 @@ class Operation {
             await SocketData.fromFullData({
               'message_id': data.messageId,
               'message_type': data.type,
-              'success': dbResponse['success'],
+              'success': dbResponse!['success'],
               'data': dbResponse
             }).encrypt(listener.nonce, listener.cnonce));
 
@@ -188,7 +192,7 @@ class Operation {
       }
     } else if (_customOperations.containsKey(data.type)) {
       try {
-        await _customOperations[data.type](listener, data);
+        await _customOperations[data.type!]!(listener, data);
         return "ok";
       } on Exception {
         //TODO: ADD ERROR

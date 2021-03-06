@@ -9,9 +9,9 @@ import 'statics.dart';
 class SocketData {
   ///
   SocketData.create(
-      {@required Map<String, dynamic> data,
+      {required Map<String, dynamic> data,
       this.messageId,
-      @required this.type}) {
+      required this.type}) {
     messageId ??= Statics.getRandomId(30);
     fullData = {"message_id": messageId, "message_type": type, "data": data};
     isDecrypted = true;
@@ -27,26 +27,26 @@ class SocketData {
 
   ///
   SocketData.fromFullData(this.fullData) {
-    fullData["message_id"] ??= Statics.getRandomId(30);
+    fullData!["message_id"] ??= Statics.getRandomId(30);
 
-    schemeValid = fullData.containsKey("data") &&
-        fullData.containsKey("message_id") &&
-        fullData.containsKey("message_type");
+    schemeValid = fullData!.containsKey("data") &&
+        fullData!.containsKey("message_id") &&
+        fullData!.containsKey("message_type");
 
     if (!schemeValid) {
       throw Exception("Socket Data Scheme isn't valid \n"
-          "\"data\" is ${fullData.containsKey("data")}\n"
-          "\"message_id\" is ${fullData.containsKey("message_id")}\n"
-          "\"message_type\" is ${fullData.containsKey("message_type")}");
+          "\"data\" is ${fullData!.containsKey("data")}\n"
+          "\"message_id\" is ${fullData!.containsKey("message_id")}\n"
+          "\"message_type\" is ${fullData!.containsKey("message_type")}");
     }
 
-    messageId = fullData["message_id"];
-    type = fullData["message_type"];
+    messageId = fullData!["message_id"];
+    type = fullData!["message_type"];
 
     isEncrypted =
-        fullData["data"] is String && fullData["data"].startsWith("enc");
+        fullData!["data"] is String && fullData!["data"].startsWith("enc");
     if (isEncrypted) {
-      fullData["data"] = fullData["data"].replaceFirst("enc", "");
+      fullData!["data"] = fullData!["data"].replaceFirst("enc", "");
     }
     isDecrypted = !isEncrypted;
   }
@@ -63,67 +63,67 @@ class SocketData {
   }
 
   ///
-  Map<String, dynamic> toJson() => fullData;
+  Map<String, dynamic>? toJson() => fullData;
 
   ///
-  String messageId;
+  String? messageId;
 
   ///
-  String type;
+  String? type;
 
   ///
-  bool schemeValid;
+  late bool schemeValid;
 
   ///
-  bool get success => fullData["success"] ?? true;
+  bool get success => fullData!["success"] ?? true;
 
   ///
   set success(bool _suc) {
-    fullData["success"] = _suc;
+    fullData!["success"] = _suc;
   }
 
   ///
-  Map<String, dynamic> get data {
-    if (isEncrypted || fullData["data"] is String) {
+  Map<String, dynamic>? get data {
+    if (isEncrypted || fullData!["data"] is String) {
       return {"success": false, "reason": "Data is encrypted"};
     }
     // ignore: avoid_as
 
-    return fullData["data"].map<String, dynamic>(
+    return fullData!["data"].map<String, dynamic>(
         (key, value) => MapEntry<String, dynamic>(key.toString(), value));
   }
 
   ///
-  Map<String, dynamic> fullData = {
+  Map<String, dynamic>? fullData = {
     "success": false,
     "reason": "data not created or operated"
   };
 
   ///
-  bool isDecrypted;
+  late bool isDecrypted;
 
   ///
-  bool isEncrypted;
+  late bool isEncrypted;
 
   ///
-  Future<SocketData> encrypt(Nonce nonce, Nonce cNonce) async {
+  Future<SocketData> encrypt(Nonce? nonce, Nonce? cNonce) async {
     if (isDecrypted) {
-      schemeValid = fullData.containsKey("data") &&
-          fullData.containsKey("message_id") &&
-          fullData.containsKey("message_type");
+      schemeValid = fullData!.containsKey("data") &&
+          fullData!.containsKey("message_id") &&
+          fullData!.containsKey("message_type");
 
       if (!schemeValid) {
         throw Exception("Socket Data Scheme isn't valid \n"
-            "\"data\" is ${fullData.containsKey("data")}\n"
-            "\"message_id\" is ${fullData.containsKey("message_id")}\n"
-            "\"message_type\" is ${fullData.containsKey("message_type")}");
+            "\"data\" is ${fullData!.containsKey("data")}\n"
+            "\"message_id\" is ${fullData!.containsKey("message_id")}\n"
+            "\"message_type\" is ${fullData!.containsKey("message_type")}");
       }
 
-      messageId = fullData["message_id"];
-      type = fullData["message_type"];
-      fullData["data"] =
+      messageId = fullData!["message_id"];
+      type = fullData!["message_type"];
+      fullData!["data"] =
           // ignore: lines_longer_than_80_chars
-          "enc${await encryptionService.encrypt1(nonce: nonce, cnonce: cNonce, data: fullData['data'])}";
+          "enc${await encryptionService.encrypt1(nonce: nonce!, cnonce: cNonce!, data: fullData!['data'])}";
       isEncrypted = true;
       isDecrypted = false;
     }
@@ -131,10 +131,10 @@ class SocketData {
   }
 
   ///
-  Future<SocketData> decrypt(Nonce nonce, Nonce cNonce) async {
-    if (isEncrypted || !(fullData["data"] is String)) {
-      fullData["data"] = await encryptionService.decrypt1(
-          nonce: nonce, cnonce: cNonce, data: fullData['data']);
+  Future<SocketData> decrypt(Nonce? nonce, Nonce? cNonce) async {
+    if (isEncrypted || !(fullData!["data"] is String)) {
+      fullData!["data"] = await encryptionService.decrypt1(
+          nonce: nonce!, cnonce: cNonce!, data: fullData!['data']);
     }
     isEncrypted = false;
     isDecrypted = true;

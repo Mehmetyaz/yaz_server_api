@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../yaz_server_api.dart';
 
 // ignore_for_file: constant_identifier_names , public_member_api_docs
@@ -32,10 +34,10 @@ class ChatService {
   ///
   static final ChatService _instance = ChatService._internal();
 
-  final Map<String, Map<String, WebSocketListener>> _onlineUsers =
-      <String, Map<String, WebSocketListener>>{};
+  final Map<String?, Map<String?, WebSocketListener>> _onlineUsers =
+      <String?, Map<String?, WebSocketListener>>{};
 
-  Map<String, int> get onlineUsers => _onlineUsers.map((key, value) => MapEntry(key, value.length));
+  Map<String?, int> get onlineUsers => _onlineUsers.map((key, value) => MapEntry(key, value.length));
 
   ///
   void init() {
@@ -51,12 +53,12 @@ class ChatService {
   ///
   Future<void> onSeenChat(
       WebSocketListener listener, SocketData socketData) async {
-    var chatId = socketData.data[CONVERSATION_ID] as String;
-    var token = AccessToken.fromToken(socketData.data["token"]);
+    var chatId = socketData.data![CONVERSATION_ID] as String?;
+    var token = AccessToken.fromToken(socketData.data!["token"]);
     var decryptToken = await token.decryptToken();
 
-    var isStarter = socketData.data["starter_id"] == decryptToken.uId;
-    var isReceiver = socketData.data["receiver_id"] == decryptToken.uId;
+    var isStarter = socketData.data!["starter_id"] == decryptToken.uId;
+    var isReceiver = socketData.data!["receiver_id"] == decryptToken.uId;
 
     if (!(isStarter || isReceiver)) return null;
 
@@ -73,13 +75,13 @@ class ChatService {
 
     var chatDoc = socketData.data;
 
-    var ownID = isStarter ? chatDoc["starter_id"] : chatDoc["receiver_id"];
+    var ownID = isStarter ? chatDoc!["starter_id"] : chatDoc!["receiver_id"];
     var otherId = !isStarter ? chatDoc["starter_id"] : chatDoc["receiver_id"];
     var isOnline =
-        _onlineUsers[otherId] != null && _onlineUsers[otherId].isNotEmpty;
+        _onlineUsers[otherId] != null && _onlineUsers[otherId]!.isNotEmpty;
 
     var isOnlineOwn =
-        _onlineUsers[ownID] != null && _onlineUsers[ownID].isNotEmpty;
+        _onlineUsers[ownID] != null && _onlineUsers[ownID]!.isNotEmpty;
 
 
 
@@ -96,18 +98,18 @@ class ChatService {
           ..collection = MESSAGE_COLLECTION);
 
     //TODO: UPDATE MESSAGES
-    socketData.data.remove("token");
+    socketData.data!.remove("token");
     if (isOnlineOwn) {
-      var l = Map.from(_onlineUsers[ownID])..remove(listener.deviceID);
+      var l = Map.from(_onlineUsers[ownID]!)..remove(listener.deviceID);
       for (var _listener in l.entries) {
-        sendSeenToOnline(_listener.value, true, socketData.data);
+        sendSeenToOnline(_listener.value, true, socketData.data!);
       }
     }
 
     if (isOnline) {
-      var l = _onlineUsers[otherId];
+      var l = _onlineUsers[otherId]!;
       for (var _listener in l.entries) {
-        sendSeenToOnline(_listener.value, false, socketData.data);
+        sendSeenToOnline(_listener.value, false, socketData.data!);
       }
     }
     // else {
@@ -126,17 +128,17 @@ class ChatService {
   }
 
   ///
-  void removeOnline(String userId, WebSocketListener listener) {
+  void removeOnline(String? userId, WebSocketListener listener) {
 
-    if (_onlineUsers[userId] != null && _onlineUsers[userId].isNotEmpty) {
-      _onlineUsers[userId].remove(listener);
+    if (_onlineUsers[userId] != null && _onlineUsers[userId]!.isNotEmpty) {
+      _onlineUsers[userId]!.remove(listener);
     }
   }
 
   ///
-  void addOnline(String userId, WebSocketListener listener) {
-    _onlineUsers[userId] ??= <String, WebSocketListener>{};
-    _onlineUsers[userId][listener.deviceID] = listener;
+  void addOnline(String? userId, WebSocketListener listener) {
+    _onlineUsers[userId] ??= <String?, WebSocketListener>{};
+    _onlineUsers[userId]![listener.deviceID] = listener;
   }
 
   ///
@@ -148,8 +150,8 @@ class ChatService {
   ///
   Future<void> onRequestNewMessage(
       WebSocketListener listener, SocketData socketData) async {
-    var chatId = socketData.data["message"][CONVERSATION_ID] as String;
-    var token = AccessToken.fromToken(socketData.data["token"]);
+    var chatId = socketData.data!["message"][CONVERSATION_ID] as String?;
+    var token = AccessToken.fromToken(socketData.data!["token"]);
     var decryptToken = await token.decryptToken();
 
     // var chatDoc = await mongoDb.query(
@@ -161,7 +163,7 @@ class ChatService {
     // var isReceiver = chatDoc["receiver_id"] == decryptToken.uId;
     //
     // if (!(isStarter || isReceiver)) return null;
-    var time = socketData.data["message"][MESSAGE_TIME] as int;
+    var time = socketData.data!["message"][MESSAGE_TIME] as int?;
     // chatDoc[LAST_ACTIVITY] = time;
     await mongoDb.update(
       Query.allowAll(queryType: QueryType.update, equals: {
@@ -180,12 +182,12 @@ class ChatService {
       queryType: QueryType.insert,
     )
       ..collection = MESSAGE_COLLECTION
-      ..data = socketData.data["message"]);
-    var chatDoc = await mongoDb.query(
+      ..data = socketData.data!["message"]);
+    var chatDoc = await (mongoDb.query(
       Query.allowAll(
           queryType: QueryType.query, equals: {CONVERSATION_ID: chatId})
         ..collection = CHAT_COLLECTIONS,
-    );
+    ) as FutureOr<Map<String, dynamic>>);
 
     var isStarter = chatDoc["starter_id"] == decryptToken.uId;
 
@@ -198,31 +200,31 @@ class ChatService {
 
 
     var isOnline =
-        _onlineUsers[otherId] != null && _onlineUsers[otherId].isNotEmpty;
+        _onlineUsers[otherId] != null && _onlineUsers[otherId]!.isNotEmpty;
 
     var isOnlineOwn =
-        _onlineUsers[ownID] != null && _onlineUsers[ownID].isNotEmpty;
+        _onlineUsers[ownID] != null && _onlineUsers[ownID]!.isNotEmpty;
 
 
 
 
 
     if (isOnlineOwn) {
-      var l = Map.from(_onlineUsers[ownID])..remove(listener.deviceID);
+      var l = Map.from(_onlineUsers[ownID]!)..remove(listener.deviceID);
       for (var _listener in l.entries) {
         sendMessageToOnline(_listener.value, true, {
           CONVERSATION_ID: chatDoc[CONVERSATION_ID],
-          "message": socketData.data["message"],
+          "message": socketData.data!["message"],
           "conversation_data": chatDoc
         });
       }
     }
 
     if (isOnline) {
-      var l = _onlineUsers[otherId];
+      var l = _onlineUsers[otherId]!;
       for (var _listener in l.entries) {
         sendMessageToOnline(_listener.value, false, {
-          "message": socketData.data["message"],
+          "message": socketData.data!["message"],
           "conversation_data": chatDoc
         });
       }
@@ -288,13 +290,13 @@ class ChatService {
   Future<void> onRequestNewConversation(
       WebSocketListener listener, SocketData socketData) async {
     try {
-      var token = AccessToken.fromToken(socketData.data["token"]);
-      var receiver = socketData.data["receiver"] as String;
-      var chatId = socketData.data[CONVERSATION_ID] as String;
+      var token = AccessToken.fromToken(socketData.data!["token"]);
+      var receiver = socketData.data!["receiver"] as String?;
+      var chatId = socketData.data![CONVERSATION_ID] as String?;
 
       var decryptToken = await token.decryptToken();
 
-      var doc = await mongoDb.insertQuery(Query.allowAll(
+      var doc = await (mongoDb.insertQuery(Query.allowAll(
         queryType: QueryType.insert,
       )
         ..collection = CHAT_COLLECTIONS
@@ -304,7 +306,7 @@ class ChatService {
           LAST_ACTIVITY: DateTime.now().millisecondsSinceEpoch,
           "starter_id": decryptToken.uId,
           "total_message_count": 0
-        });
+        }) as FutureOr<Map<String, dynamic>>);
 
       sendMessage(listener.client,
           socketData.response({"document": doc["ops"][0]})..success = true);

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -39,7 +40,7 @@ class HttpServerService {
   final Map<String, HttpRequestHandler> _handlers =
       <String, HttpRequestHandler>{};
 
-  HttpServer _server;
+  late HttpServer _server;
   final String _ima = "jpg";
 
   ///
@@ -87,7 +88,7 @@ class HttpServerService {
     final wsService = WebSocketService();
     if (request.uri.toString() != "/favicon.ico") {
       if (_handlers.containsKey(request.uri.toString().split("?").first)) {
-        await _handlers[request.uri.toString().split("?").first](request);
+        await _handlers[request.uri.toString().split("?").first]!(request);
       } else if (request.uri.toString() == '/ws') {
         try {
           var soc = await WebSocketTransformer.upgrade(request);
@@ -97,10 +98,10 @@ class HttpServerService {
         }
       } else if (request.uri.toString().split("?").first == "/socket_request") {
         var conReq = WebSocketConnectRequest(
-            connectionInfo: request.connectionInfo, headers: request.headers);
+            connectionInfo: request.connectionInfo!, headers: request.headers);
 
         if (!wsService.connectRequests.contains(conReq)) {
-          var res = await encryptionService.encrypt4(conReq.id);
+          var res = await encryptionService.encrypt4(conReq.id!);
           request.response.headers.set('Content-Type', 'application/json');
           request.response
               .add(utf8.encode(json.encode({'success': true, 'req_id': res})));
@@ -121,7 +122,7 @@ class HttpServerService {
           if (q["token"] == null) {
             await request.response.close();
           } else {
-            var token = AccessToken.fromToken(q["token"].replaceAll(" ", "+"));
+            var token = AccessToken.fromToken(q["token"]!.replaceAll(" ", "+"));
 
             ///
             //ignore: unawaited_futures, cascade_invocations
@@ -153,8 +154,8 @@ class HttpServerService {
 
             token = await token.decryptToken();
 
-            var id = await mediaServer.addImage(
-                base64.decode(strippedStr), token.uId);
+            var id = await (mediaServer.addImage(
+                base64.decode(strippedStr), token.uId) as FutureOr<String>);
             request.response.add(utf8.encode(id));
             await request.response.close();
           }

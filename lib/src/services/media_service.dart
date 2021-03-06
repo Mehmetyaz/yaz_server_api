@@ -30,7 +30,7 @@ class MediaService {
 
         if (_f.path.split(".").last == "png") {
           var file = File(_f.path);
-          var image = decodeImage(file.readAsBytesSync());
+          var image = decodeImage(file.readAsBytesSync())!;
 
           var thumb = copyResize(image, height: 200);
 
@@ -66,11 +66,11 @@ class MediaService {
   ///add image from bytes
   ///images saved (if higher than) 200 , 700 , original size and story size
   ///return image id
-  Future<String> addImage(Uint8List bytes, String id) async {
+  Future<String?> addImage(Uint8List bytes, String? id) async {
 
     var separator = path.separator;
 
-    var image = decodeImage(bytes);
+    var image = decodeImage(bytes)!;
 
     // print(image.iccProfile.toString());
     //
@@ -146,7 +146,7 @@ class MediaService {
   }
 
   ///Add Video and return id
-  Future<String> addVideo(Uint8List bytes) async {
+  Future<String?> addVideo(Uint8List bytes) async {
     var separator = path.separator;
     var id = Statics.getRandomId(20);
     File('${path.current}$separator'
@@ -173,7 +173,7 @@ class MediaService {
       raw = newImage;
 
       // print("INIT : Cropped RAW BYTES: ${raw.length}");
-      return encodeF(newImageAddedRaw);
+      return encodeF(newImageAddedRaw) as Uint8List;
     } else {
       var w = raw.width;
       var h = w * 16 / 9;
@@ -186,7 +186,7 @@ class MediaService {
       raw = newImage;
 
       // print("INIT : cropped RAW BYTES: ${raw.length}");
-      return encodeJpg(newImageAddedRaw, quality: 80);
+      return encodeJpg(newImageAddedRaw, quality: 80) as Uint8List;
     }
   }
 }
