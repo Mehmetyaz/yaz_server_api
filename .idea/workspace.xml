@@ -22,7 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0549c849-1435-46bb-aab7-e3137d20d1a3" name="Default Changelist" comment="fixes">
+    <list default="true" id="0549c849-1435-46bb-aab7-e3137d20d1a3" name="Default Changelist" comment="fixes triggers">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/services/trigger_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/trigger_service.dart" afterDir="false" />
     </list>
@@ -135,7 +135,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615797053438</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="fixes triggers">
+      <created>1615797559706</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1615797559706</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -159,6 +166,7 @@
     <MESSAGE value="Adding auth type guess" />
     <MESSAGE value="null migrate" />
     <MESSAGE value="fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixes" />
+    <MESSAGE value="fixes triggers" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixes triggers" />
   </component>
 </project>
