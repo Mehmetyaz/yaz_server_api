@@ -121,6 +121,9 @@ class TriggerService {
   /// millis epoch
   final Map<ObjectId?, int> queueLast = <ObjectId?, int>{};
 
+  /// millis epoch
+  final Map<ObjectId?, int> lastSends = <ObjectId?, int>{};
+
   ///
   void removeListener(ObjectId objectId, String? messageID) {
     if (_listeners[objectId] == null) {
@@ -141,6 +144,11 @@ class TriggerService {
     for (var removedID in _listenersToRemove.keys) {
       for (var removingListener in _listenersToRemove[removedID]!) {
         _listeners[removedID]!.remove(removingListener);
+        if (_listeners[removedID] != null && _listeners[removedID]!.isEmpty) {
+          _listeners.remove(removedID);
+          queueLast.remove(removedID);
+          lastSends.remove(removedID);
+        }
       }
     }
     _removing = false;
@@ -163,8 +171,13 @@ class TriggerService {
           }
         }
 
-        if ((queueLast[objectId] != null && queueLast[objectId] == millis) ||
-            DateTime.now().millisecondsSinceEpoch - millis > 2000) {
+        var a = (queueLast[objectId] != null && queueLast[objectId] == millis);
+        var b = (lastSends[objectId] != null &&
+            DateTime.now().millisecondsSinceEpoch - lastSends[objectId]! >
+                2000);
+
+        if (a || b) {
+          lastSends[objectId] = DateTime.now().millisecondsSinceEpoch;
           for (var element in List.from(_listeners[objectId]!.values)) {
             if (element.collection != "user_chat_documents" &&
                 element.isOutDate) {
