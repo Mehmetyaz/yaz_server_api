@@ -335,8 +335,7 @@ class MongoDb {
       } else {
         ///unsuccessful connection
         //TODO: ADD ERROR
-        return SocketData.fromFullData(
-            {"success": false, "reason": msg}).data;
+        return SocketData.fromFullData({"success": false, "reason": msg}).data;
       }
     } on Exception catch (e) {
       //TODO: ADD ERROR
@@ -358,6 +357,25 @@ class MongoDb {
       var dat = await mongoDb.collection(_query.collection!).update(
           _query.selector(), _query.update,
           upsert: true, writeConcern: WriteConcern.UNACKNOWLEDGED);
+      // print("UPDATE QUERY : $dat");
+      // ignore: unnecessary_null_comparison
+      if (dat != null) {
+        return {
+          'success': true,
+          'data': await PermissionHandler.resource(_query)
+        };
+      } else {
+        return {'success': false, 'reason': 'document is not exists'};
+      }
+    });
+  }
+
+  ///Update Operation
+  Future<Map<String, dynamic>?> delete(Query _query) async {
+    return _operation(_query, () async {
+      var dat = await mongoDb
+          .collection(_query.collection!)
+          .remove(_query.selector(), writeConcern: WriteConcern.UNACKNOWLEDGED);
       // print("UPDATE QUERY : $dat");
       // ignore: unnecessary_null_comparison
       if (dat != null) {
@@ -490,7 +508,8 @@ class MongoDb {
 
       if (userDataEncrypted != null && userDataEncrypted['data'] != null) {
         var userData =
-            await (encryptionService.decrypt3(userDataEncrypted['data']) as FutureOr<Map<String, dynamic>>);
+            await (encryptionService.decrypt3(userDataEncrypted['data'])
+                as FutureOr<Map<String, dynamic>>);
 
         // print("Decrypted User Data: $userData");
         if (userData['user_mail'] == args['user_mail'] &&

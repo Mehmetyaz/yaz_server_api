@@ -1,4 +1,5 @@
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:yaz_server_api/yaz_server_api.dart';
 
 import '../services/permission_handler.dart';
 import 'token/token.dart';
@@ -56,6 +57,9 @@ enum QueryType {
 
   ///
   streamQuery,
+
+  ///
+  delete
 }
 
 ///
@@ -71,7 +75,8 @@ MongoDbOperationType operationTypeFromQueryType(QueryType? type) {
       return MongoDbOperationType.update;
     case QueryType.exists:
       return MongoDbOperationType.create;
-
+    case QueryType.delete:
+      return MongoDbOperationType.delete;
     case QueryType.streamQuery:
       return MongoDbOperationType.read;
 
@@ -225,7 +230,6 @@ class Query {
         if (notEq.value is List<dynamic> ||
             notEq.value is Iterable ||
             notEq.value is List<String>) {
-
           for (var e in notEq.value) {
             builder.or(where.ne(notEq.key, e));
           }

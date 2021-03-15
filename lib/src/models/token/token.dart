@@ -35,7 +35,7 @@ class AccessToken {
   AccessToken.generateForUser(
       {required AuthType this.authType,
       required String this.mail,
-      this.deviceID,
+      required this.deviceID,
       required String this.uId,
       required String this.passWord})
       : isHashed = false,
@@ -64,10 +64,10 @@ class AccessToken {
   bool isHashed;
 
   ///Auth Type
-  AuthType? authType;
+  late AuthType authType;
 
   ///user device ID
-  String? deviceID;
+  late String deviceID;
 
   ///User ıd  (if logged)
   String? uId;

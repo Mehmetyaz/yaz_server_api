@@ -70,9 +70,7 @@ class TriggerService {
   ///
   void periodic(String name, Duration duration, PeriodicTrigger callback) {
     var timer = Timer.periodic(duration, (t) {
-      callback().timeout(timeout, onTimeout: () {
-
-      });
+      callback().timeout(timeout, onTimeout: () {});
     });
     _periodic[name] = timer;
   }
@@ -109,25 +107,24 @@ class TriggerService {
   void addListener(DbListener dbListener) {
     // print("EKLENDI:::::: ${dbListener.id} \n\n\n\n");
 
-    if ( _listeners[dbListener.id] == null){
-      _listeners[dbListener.id] = <String? , DbListener>{};
+    if (_listeners[dbListener.id] == null) {
+      _listeners[dbListener.id] = <String?, DbListener>{};
     }
 
     _listeners[dbListener.id]![dbListener.messageId] = dbListener;
   }
 
-
   ///
-  final Map<ObjectId?, Map<String? , DbListener>> _listeners =
-      <ObjectId?, Map<String? , DbListener>>{};
+  final Map<ObjectId?, Map<String?, DbListener>> _listeners =
+      <ObjectId?, Map<String?, DbListener>>{};
 
   /// millis epoch
   final Map<ObjectId?, int> queueLast = <ObjectId?, int>{};
 
   ///
   void removeListener(ObjectId objectId, String? messageID) {
-    if ( _listeners[objectId] == null){
-      _listeners[objectId] = <String? , DbListener>{};
+    if (_listeners[objectId] == null) {
+      _listeners[objectId] = <String?, DbListener>{};
     }
     _listeners[objectId]!.remove(messageID);
     if (_listeners[objectId]!.isEmpty) {
@@ -155,7 +152,6 @@ class TriggerService {
       ObjectId? objectId, Map<String, dynamic> data, int millis) async {
     try {
       if (_listeners.containsKey(objectId)) {
-
         await Future.delayed(const Duration(seconds: 2));
 
         // ignore: literal_only_boolean_expressions
@@ -167,11 +163,13 @@ class TriggerService {
           }
         }
 
-        if ((queueLast[objectId] != null && queueLast[objectId] == millis)) {
-          for (var element in _listeners[objectId]!.values) {
-            if (element.collection != "user_chat_documents" && element.isOutDate) {
-              if ( _listeners[objectId] == null){
-                _listeners[objectId] = <String? , DbListener>{};
+        if ((queueLast[objectId] != null && queueLast[objectId] == millis) ||
+            DateTime.now().millisecondsSinceEpoch - millis > 2000) {
+          for (var element in List.from(_listeners[objectId]!.values)) {
+            if (element.collection != "user_chat_documents" &&
+                element.isOutDate) {
+              if (_listeners[objectId] == null) {
+                _listeners[objectId] = <String?, DbListener>{};
               }
               // _listeners[objectId].remove(element.messageId);
               // if (_listeners[objectId].isEmpty) {
@@ -182,8 +180,6 @@ class TriggerService {
               }
               _listenersToRemove[objectId]!.add(element);
             } else {
-
-
               //ignore: unawaited_futures
               sendAndWaitMessage(
                       element.listener,
@@ -197,13 +193,10 @@ class TriggerService {
                       waitingType: "stream_received",
                       waitingID: element.messageId)
                   .timeout(const Duration(seconds: 5), onTimeout: () {
-
-
                 if (_listenersToRemove[objectId] == null) {
                   _listenersToRemove[objectId] = <DbListener>[];
                 }
                 _listenersToRemove[objectId]!.add(element);
-
 
                 // if ( _listeners[objectId] == null){
                 //   _listeners[objectId] = <String , DbListener>{};
@@ -224,9 +217,7 @@ class TriggerService {
           }
           _remove();
         }
-      } else {
-
-      }
+      } else {}
     } on Exception {
       //TODO: ADD ERROR
     }
@@ -248,23 +239,17 @@ class TriggerService {
     var isListen = _listeners[res["data"]["_id"]] != null &&
         _listeners[res["data"]["_id"]]!.isNotEmpty;
 
-
-
     if (afterReq || isListen) {
       PermissionHandler.resource(query).then((value) {
         for (var trig in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
-          trig(query, before, value).timeout(timeout, onTimeout: () {
-
-          });
+          trig(query, before, value).timeout(timeout, onTimeout: () {});
         }
         value["type"] = "update";
         notifyListeners(res["data"]["_id"], value);
       });
     } else {
       for (var trig in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
-        trig(query, before, null).timeout(timeout, onTimeout: () {
-
-        });
+        trig(query, before, null).timeout(timeout, onTimeout: () {});
       }
     }
   }
@@ -274,21 +259,16 @@ class TriggerService {
   void _triggerDeletes(
       Query query, Map<String, dynamic>? before, Map<String, dynamic> res) {
     for (var trig in _onDeleteTriggers[query.collection!] ?? <OnDelete>[]) {
-      trig(query, before).timeout(timeout, onTimeout: () {
-
-      });
+      trig(query, before).timeout(timeout, onTimeout: () {});
     }
     notifyListeners(res["_id"], {"type": "delete"});
   }
 
   void _triggerCreates(Query query, Map<String, dynamic> res) {
     for (var trig in _onCreateTriggers[query.collection!] ?? <OnCreate>[]) {
-      trig(query).timeout(timeout, onTimeout: () {
-
-      });
+      trig(query).timeout(timeout, onTimeout: () {});
     }
   }
-
 
   ///Trigger
   Future<Map<String, dynamic>> triggerAndReturn(

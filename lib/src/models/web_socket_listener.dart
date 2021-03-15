@@ -388,7 +388,7 @@ class WebSocketListener {
           var token = await AccessToken
               .generateForUser(
               authType: AuthType.loggedIn,
-              deviceID: deviceID,
+              deviceID: deviceID!,
               mail: userData['open']['user_mail'],
               passWord: stage3Data.data!['password'],
               uId: userData['open']['user_id'])
@@ -428,7 +428,7 @@ class WebSocketListener {
           ///User Confirmed
           var token =
           await AccessToken
-              .generateForGuess(AuthType.guess, deviceID)
+              .generateForGuess(AuthType.guess, deviceID!)
               .encryptedToken;
 
           sendMessage(
@@ -465,7 +465,7 @@ class WebSocketListener {
             var token = await AccessToken
                 .generateForUser(
                 authType: AuthType.admin,
-                deviceID: deviceID,
+                deviceID: deviceID!,
                 mail: userData['open']['user_mail'],
                 passWord: stage3Data.data!['password'],
                 uId: userData['open']['user_id'])
@@ -505,7 +505,7 @@ class WebSocketListener {
             ///User Confirmed
             var token =
             await AccessToken
-                .generateForGuess(AuthType.guess, deviceID)
+                .generateForGuess(AuthType.guess, deviceID!)
                 .encryptedToken;
 
             sendMessage(
@@ -534,7 +534,7 @@ class WebSocketListener {
             .millisecondsSinceEpoch;
 
         var token = await AccessToken
-            .generateForGuess(AuthType.guess, deviceID)
+            .generateForGuess(AuthType.guess, deviceID!)
             .encryptedToken;
 
         ///Send token

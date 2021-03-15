@@ -56,13 +56,14 @@ class Operation {
           }).encrypt(listener.nonce, listener.cnonce));
       return 'ok';
     } else if (data.type == 'login') {
-      var _dbRes = await (_db.confirmUser(data.data, listener.deviceID) as FutureOr<Map<String, dynamic>>);
+      var _dbRes = await (_db.confirmUser(data.data, listener.deviceID)
+          as FutureOr<Map<String, dynamic>>);
       AccessToken token;
       if (_dbRes['success']) {
         token = AccessToken.generateForUser(
             authType: AuthType.loggedIn,
             mail: _dbRes['secret']['user_mail'],
-            deviceID: listener.deviceID,
+            deviceID: listener.deviceID!,
             uId: _dbRes['open']['user_id'],
             passWord: _dbRes['secret']['password']);
         _dbRes['open']['token'] = await token.encryptedToken;
@@ -79,7 +80,8 @@ class Operation {
           }).encrypt(listener.nonce, listener.cnonce));
       return 'ok';
     } else if (data.type == 'login_admin') {
-      var _dbRes = await (_db.confirmUser(data.data, listener.deviceID) as FutureOr<Map<String, dynamic>>);
+      var _dbRes = await (_db.confirmUser(data.data, listener.deviceID)
+          as FutureOr<Map<String, dynamic>>);
 
       var isAdmin = (await _db.exists(Query.allowAll(
         queryType: QueryType.exists,
@@ -93,7 +95,7 @@ class Operation {
         token = AccessToken.generateForUser(
             authType: AuthType.admin,
             mail: _dbRes['secret']['user_mail'],
-            deviceID: listener.deviceID,
+            deviceID: listener.deviceID!,
             uId: _dbRes['open']['user_id'],
             passWord: _dbRes['secret']['password']);
         _dbRes['open']['token'] = await token.encryptedToken;
@@ -144,6 +146,9 @@ class Operation {
         switch (q.queryType) {
           case QueryType.query:
             dbResponse = await _db.query(q);
+            break;
+          case QueryType.delete:
+            dbResponse = await _db.delete(q);
             break;
           case QueryType.listQuery:
             dbResponse = await _db.listQuery(q);
