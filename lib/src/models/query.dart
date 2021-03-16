@@ -85,6 +85,160 @@ MongoDbOperationType operationTypeFromQueryType(QueryType? type) {
   }
 }
 
+/// Start creating collection
+QueryBuilder collection(String collection) => QueryBuilder._create(collection);
+
+///
+class QueryBuilder {
+  QueryBuilder._create(this._collection);
+
+  /// [ { "a" : "b" } ,  { "a" : "c" }  , {"a" : "d" , "arg" : { "1" : "2"}}]
+  ///
+  /// where("a", isEqualTo: "b") => {"a" : "b"}
+  /// where("arg.1" , isEqualTo: "2") => {"a" : "d" , "arg" : { "1" : "2"}}
+  ///
+  /// Only use equalTo or notEqualTo
+  void where(String fieldName, {dynamic isEqualTo, dynamic isNotEqualTo}) {
+    assert(isEqualTo == null || isNotEqualTo == null, "Only use one");
+    assert(isNotEqualTo != null || isEqualTo != null, "Use one condition");
+    if (isEqualTo != null) {
+      _equals[fieldName] = isEqualTo;
+    }
+    if (isNotEqualTo != null) {
+      _notEquals[fieldName] = isNotEqualTo;
+    }
+  }
+
+  /// [ {"name" : "x" , "age" : 15} , {"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
+  ///
+  /// filter("age", isGreaterThan: 20) => {"name" : "z" , "age" : 25}
+  /// filter("age", isGreaterOrEqualThan: 20) => [{"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
+  ///
+  void filter(String fieldName,
+      {dynamic isGreaterThan,
+      dynamic isGreaterOrEqualThan,
+      dynamic isLessThan,
+      dynamic isLessOrEqualThan}) {
+    var _l = List<bool>.generate(4, (index) {
+      if (index == 0) return isGreaterThan != null;
+      if (index == 1) return isGreaterOrEqualThan != null;
+      if (index == 2) return isLessThan != null;
+      if (index == 3) return isLessOrEqualThan != null;
+      return false;
+    });
+
+    assert(_l.where((element) => element).length == 1, "Only use one");
+    assert(
+        isGreaterThan != null ||
+            isGreaterOrEqualThan != null ||
+            isLessThan != null ||
+            isLessOrEqualThan != null,
+        "Use one condition");
+
+    if (isGreaterThan != null) {
+      _filters["\$gt"] ??= <String, dynamic>{};
+      _filters["\$gt"][fieldName] = isGreaterThan;
+    }
+    if (isGreaterOrEqualThan != null) {
+      _filters["\$gte"] ??= <String, dynamic>{};
+      _filters["\$gte"][fieldName] = isGreaterOrEqualThan;
+    }
+    if (isLessThan != null) {
+      _filters["\$lt"] ??= <String, dynamic>{};
+      _filters["\$lt"][fieldName] = isLessThan;
+    }
+    if (isLessOrEqualThan != null) {
+      _filters["\$lte"] ??= <String, dynamic>{};
+      _filters["\$lte"][fieldName] = isLessOrEqualThan;
+    }
+  }
+
+  /// Document Limit for list query
+  void limit(int limit) {
+    assert(limit > 0, "Limit must be greater than 0");
+    _limit = limit;
+  }
+
+  /// Document Skip count on start for list query
+  void offset(int offset) {
+    assert(offset >= 0, "offset must be greater than or equal to 0");
+    _offset = offset;
+  }
+
+  /// [ {"name" : "x" , "age" : 15} , {"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
+  ///
+  /// sort("age" , Sorting.ascending)  => (first element) {"name" : "x" , "age" : 15}
+  ///
+  void sort(String fieldName, Sorting sorting) {
+    _sorts[fieldName] = sorting;
+  }
+
+  ///
+  /// Query Response include or exclude document fields
+  void fields({List<String>? includes, List<String>? excludes}) {
+    if (includes != null && includes.isNotEmpty) {
+      for (var f in includes) {
+        _fileds[f] = true;
+      }
+    }
+
+    if (excludes != null && excludes.isNotEmpty) {
+      for (var f in excludes) {
+        _fileds[f] = false;
+      }
+    }
+  }
+
+  ///Query collection
+  ///eg users , posts
+  String? _collection;
+
+  ///Query Type
+  ///update
+  ///create
+  ///delete
+  ///read
+  MongoDbOperationType? _operationType;
+
+  ///
+  QueryType? _queryType;
+
+  ///Query filter
+  ///
+  Map<String, dynamic> _filters = <String, dynamic>{};
+
+  ///Query equals
+  /// e.g. {user_name : "mehmedyaz"}   , {name : Mehmet}
+  Map<String, dynamic> _equals = <String, dynamic>{};
+
+  ///
+  Map<String, dynamic> _notEquals = <String, dynamic>{};
+
+  ///Sorts
+  Map<String, dynamic> _sorts = <String, Sorting>{};
+
+  ///
+  Map<String, bool> _fileds = <String, bool>{};
+
+  ///Data counts
+  int? _limit, _offset;
+
+  ///
+  Query toQuery(QueryType type, {AccessToken? token, bool allowAll = false}) {
+    return Query.create(
+        collection: _collection,
+        allowAll: allowAll,
+        equals: _equals,
+        queryType: type,
+        filters: _filters,
+        limit: _limit,
+        notEquals: _notEquals,
+        offset: _offset,
+        sorts: _sorts,
+        token: token);
+  }
+}
+
 ///Query scheme for mongo db query
 class Query {
   ///Query from socket data scheme
@@ -108,11 +262,27 @@ class Query {
     data = map['document'] ?? null;
     filters = map['filters'] ?? <String, dynamic>{};
     equals = map['equals'] ?? <String, dynamic>{};
+    notEquals = map['not_equals'] ?? <String, dynamic>{};
     sorts = sortingCast(map['sorts']);
     update = map['update'] ?? <String, dynamic>{};
     limit = map['limit'] ?? 1000;
     offset = map['offset'] ?? 0;
   }
+
+  ///AllowAll Query
+  Query.create(
+      {required this.collection,
+      this.queryType,
+      this.token,
+      this.filters = const <String, dynamic>{},
+      this.equals = const <String, dynamic>{},
+      this.sorts = const <String, dynamic>{},
+      this.notEquals = const <String, dynamic>{},
+      this.update = const <String, dynamic>{},
+      this.limit = 1000,
+      required this.allowAll,
+      this.offset = 0})
+      : operationType = operationTypeFromQueryType(queryType);
 
   ///AllowAll Query
   Query.allowAll(
@@ -128,10 +298,10 @@ class Query {
         operationType = operationTypeFromQueryType(queryType);
 
   ///Allow All Query
-  final bool allowAll;
+  bool allowAll = false;
 
   ///Access Token
-  final AccessToken? token;
+  AccessToken? token;
 
   ///Query collection
   ///eg users , posts
@@ -148,7 +318,7 @@ class Query {
   MongoDbOperationType? operationType;
 
   ///
-  final QueryType? queryType;
+  QueryType? queryType;
 
   ///Query filter
   ///

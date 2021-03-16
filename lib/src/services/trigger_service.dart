@@ -262,27 +262,35 @@ class TriggerService {
     // ignore: lines_longer_than_80_chars
     //     ": ${_listeners[res["data"]["_id"]] == null ? null : _listeners[res["data"]["_id"]].length}");
 
-    var isListen = _listeners[res["data"]["_id"]] != null &&
-        _listeners[res["data"]["_id"]]!.isNotEmpty;
+    print(_listeners);
+    print(res);
 
-    //print("is Listen : ${_listeners[res["data"]["_id"]]}");
+    if (res.containsKey("data") && res["data"] != null) {
 
-    if (afterReq || isListen) {
+      var isListen = _listeners[res["data"]["_id"]] != null &&
+          _listeners[res["data"]["_id"]]!.isNotEmpty;
+
+      //print("is Listen : ${_listeners[res["data"]["_id"]]}");
+
+      if (afterReq || isListen) {
 
 
 
-      PermissionHandler.resource(query).then((value) {
+        PermissionHandler.resource(query).then((value) {
+          for (var trig in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
+            trig(query, before, value).timeout(timeout, onTimeout: () {});
+          }
+          value["type"] = "update";
+          notifyListeners(res["data"]["_id"], value);
+        });
+      } else {
         for (var trig in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
-          trig(query, before, value).timeout(timeout, onTimeout: () {});
+          trig(query, before, null).timeout(timeout, onTimeout: () {});
         }
-        value["type"] = "update";
-        notifyListeners(res["data"]["_id"], value);
-      });
-    } else {
-      for (var trig in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
-        trig(query, before, null).timeout(timeout, onTimeout: () {});
       }
     }
+
+
   }
 
   /// Only Use Update Operation
