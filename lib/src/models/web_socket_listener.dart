@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-
 import '../services/chat_service.dart';
 import '../services/encryption.dart';
 import '../services/mongo_db_service.dart';
@@ -33,7 +32,7 @@ Future<SocketData> waitMessage(Stream stream,
 
     var completer = Completer.sync();
     var _subscription =
-    stream.timeout(const Duration(seconds: 30), onTimeout: (sink) {
+        stream.timeout(const Duration(seconds: 30), onTimeout: (sink) {
       if (onTimeout != null) {
         onTimeout();
       }
@@ -107,14 +106,14 @@ void sendMessage(WebSocket? webSocket, SocketData socketData,
 }
 
 ///Send and wait message with defined web socket
-Future<SocketData?> sendAndWaitMessage(WebSocketListener socketListener,
-    SocketData socketData,
+Future<SocketData?> sendAndWaitMessage(
+    WebSocketListener socketListener, SocketData socketData,
     {String? waitingID,
-      String? waitingType,
-      bool anyID = false,
-      bool anyType = false,
-      Function? onError,
-      Function? onTimeout}) async {
+    String? waitingType,
+    bool anyID = false,
+    bool anyType = false,
+    Function? onError,
+    Function? onTimeout}) async {
   try {
     // print("SEND AND WAIT MESSAGE IN : ${socketData.fullData}");
     sendMessage(socketListener.client, socketData, onError: onError);
@@ -127,13 +126,13 @@ Future<SocketData?> sendAndWaitMessage(WebSocketListener socketListener,
     id: waitingID != null
         ? waitingID
         : anyID
-        ? null
-        : socketData.messageId,
+            ? null
+            : socketData.messageId,
     type: waitingType != null
         ? waitingType
         : anyType
-        ? null
-        : socketData.type,
+            ? null
+            : socketData.type,
   );
 }
 
@@ -149,9 +148,7 @@ class WebSocketListener {
     // timer = Timer.periodic(const Duration(seconds: 120000), (timer) {
     //   checkConnection();
     // });
-    lastOnline = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    lastOnline = DateTime.now().millisecondsSinceEpoch;
   }
 
   @override
@@ -169,12 +166,12 @@ class WebSocketListener {
   void checkConnection() {
     try {
       sendAndWaitMessage(
-          this,
-          SocketData.fromFullData({
-            'message_id': Statics.getRandomId(20),
-            'message_type': 'connection_confirmation',
-            "data": {}
-          }))
+              this,
+              SocketData.fromFullData({
+                'message_id': Statics.getRandomId(20),
+                'message_type': 'connection_confirmation',
+                "data": {}
+              }))
           .then((value) => null)
           .timeout(const Duration(seconds: 10), onTimeout: () {
         close();
@@ -196,12 +193,13 @@ class WebSocketListener {
   bool operator ==(Object other) {
     if (other.runtimeType != WebSocketListener) {
       throw Exception(
-          "WebSocketListener not have equals operator with : ${other
-              .runtimeType}");
-    } else {
-      WebSocketListener socketListener = other as WebSocketListener;
+          "WebSocketListener not have equals operator with : ${other.runtimeType}");
+    } else if (other is WebSocketListener) {
+      var socketListener = other;
       return deviceID == socketListener.deviceID;
     }
+    throw Exception(
+        "WebSocketListener not have equals operator with : ${other.runtimeType}");
   }
 
   ///Operation Class
@@ -289,9 +287,12 @@ class WebSocketListener {
       /// device_id : string
       ///}
       var stage1Data =
-      await waitMessage(socketBroadcast, type: 'request_connection');
+          await waitMessage(socketBroadcast, type: 'request_connection');
 
-      if (stage1Data == null ||
+
+
+
+      if (
           stage1Data.fullData == null ||
           stage1Data.type == null ||
           stage1Data.messageId == null) {
@@ -305,9 +306,8 @@ class WebSocketListener {
       if (stage1Data.fullData!['device_id'] == null) return null;
 
       ///unique device id
-      deviceID =
-      await encryptionService.decrypt4(
-          (stage1Data.fullData!['device_id']) ?? "");
+      deviceID = await encryptionService
+          .decrypt4((stage1Data.fullData!['device_id']) ?? "");
 
       // print("DEVICE ID REVEIVED ::: $deviceID");
 
@@ -317,15 +317,15 @@ class WebSocketListener {
         service.connectRequests.remove(req);
       }
 
+
       ///log device id and request id
       var db = MongoDb();
       await db.logConnection({
         'id': requestID,
         'deviceID': deviceID,
-        'timestamp': DateTime
-            .now()
-            .millisecondsSinceEpoch,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
       });
+
 
       ///generate server side nonce
       nonce = Nonce.random();
@@ -385,13 +385,12 @@ class WebSocketListener {
           // print("USER CONFIRMED : $userData");
 
           ///User Confirmed
-          var token = await AccessToken
-              .generateForUser(
-              authType: AuthType.loggedIn,
-              deviceID: deviceID!,
-              mail: userData['open']['user_mail'],
-              passWord: stage3Data.data!['password'],
-              uId: userData['open']['user_id'])
+          var token = await AccessToken.generateForUser(
+                  authType: AuthType.loggedIn,
+                  deviceID: deviceID!,
+                  mail: userData['open']['user_mail'],
+                  passWord: stage3Data.data!['password'],
+                  uId: userData['open']['user_id'])
               .encryptedToken;
 
           isLogged = true;
@@ -403,9 +402,7 @@ class WebSocketListener {
             'success': true,
             'data': {
               'token': token,
-              'timestamp': DateTime
-                  .now()
-                  .millisecondsSinceEpoch,
+              'timestamp': DateTime.now().millisecondsSinceEpoch,
               'timeout': 30,
               'auth_type': 'auth',
               'user_data': userData['open']
@@ -427,9 +424,8 @@ class WebSocketListener {
 
           ///User Confirmed
           var token =
-          await AccessToken
-              .generateForGuess(AuthType.guess, deviceID!)
-              .encryptedToken;
+              await AccessToken.generateForGuess(AuthType.guess, deviceID!)
+                  .encryptedToken;
 
           sendMessage(
               client,
@@ -439,9 +435,7 @@ class WebSocketListener {
                 'success': true,
                 'data': {
                   'token': token,
-                  'timestamp': DateTime
-                      .now()
-                      .millisecondsSinceEpoch,
+                  'timestamp': DateTime.now().millisecondsSinceEpoch,
                   'timeout': 30,
                   'auth_type': 'guess'
                 }
@@ -462,13 +456,12 @@ class WebSocketListener {
             // print("USER CONFIRMED : $userData");
 
             ///User Confirmed
-            var token = await AccessToken
-                .generateForUser(
-                authType: AuthType.admin,
-                deviceID: deviceID!,
-                mail: userData['open']['user_mail'],
-                passWord: stage3Data.data!['password'],
-                uId: userData['open']['user_id'])
+            var token = await AccessToken.generateForUser(
+                    authType: AuthType.admin,
+                    deviceID: deviceID!,
+                    mail: userData['open']['user_mail'],
+                    passWord: stage3Data.data!['password'],
+                    uId: userData['open']['user_id'])
                 .encryptedToken;
 
             isLogged = true;
@@ -480,9 +473,7 @@ class WebSocketListener {
               'success': true,
               'data': {
                 'token': token,
-                'timestamp': DateTime
-                    .now()
-                    .millisecondsSinceEpoch,
+                'timestamp': DateTime.now().millisecondsSinceEpoch,
                 'timeout': 30,
                 'auth_type': 'admin',
                 'user_data': userData['open']
@@ -504,9 +495,8 @@ class WebSocketListener {
 
             ///User Confirmed
             var token =
-            await AccessToken
-                .generateForGuess(AuthType.guess, deviceID!)
-                .encryptedToken;
+                await AccessToken.generateForGuess(AuthType.guess, deviceID!)
+                    .encryptedToken;
 
             sendMessage(
                 client,
@@ -516,9 +506,7 @@ class WebSocketListener {
                   'success': true,
                   'data': {
                     'token': token,
-                    'timestamp': DateTime
-                        .now()
-                        .millisecondsSinceEpoch,
+                    'timestamp': DateTime.now().millisecondsSinceEpoch,
                     'timeout': 30,
                     'auth_type': 'guess'
                   }
@@ -529,13 +517,11 @@ class WebSocketListener {
           throw Exception("Not Admin");
         }
       } else {
-        stage3Data.data!['timestamp'] = DateTime
-            .now()
-            .millisecondsSinceEpoch;
+        stage3Data.data!['timestamp'] = DateTime.now().millisecondsSinceEpoch;
 
-        var token = await AccessToken
-            .generateForGuess(AuthType.guess, deviceID!)
-            .encryptedToken;
+        var token =
+            await AccessToken.generateForGuess(AuthType.guess, deviceID!)
+                .encryptedToken;
 
         ///Send token
         sendMessage(
@@ -546,9 +532,7 @@ class WebSocketListener {
               'success': true,
               'data': {
                 'token': token,
-                'timestamp': DateTime
-                    .now()
-                    .millisecondsSinceEpoch,
+                'timestamp': DateTime.now().millisecondsSinceEpoch,
                 'timeout': 30,
                 'auth_type': 'guess'
               }
@@ -570,13 +554,11 @@ class WebSocketListener {
      * Socket listener for each identified device
      */
     subscription = socketBroadcast.listen(
-            (event) async {
+        (event) async {
           ///data oluşturuluyor
 
           try {
-            lastOnline = DateTime
-                .now()
-                .millisecondsSinceEpoch;
+            lastOnline = DateTime.now().millisecondsSinceEpoch;
             if (event.runtimeType != String) {
               // print(utf8.decode(event));
             }
@@ -613,12 +595,7 @@ class WebSocketListener {
           await close();
         },
         cancelOnError: true,
-        onDone: () {
-          close();
-
-          ///closed
-          ///service.closeListener(this);
-        });
+        onDone: close);
   }
 
   ///Check Timer

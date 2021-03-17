@@ -2,7 +2,6 @@ library yaz_server_api;
 
 import 'dart:io';
 
-import 'package:meta/meta.dart';
 
 import 'src/services/encryption.dart';
 import 'src/services/https_server.dart';

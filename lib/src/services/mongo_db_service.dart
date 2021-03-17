@@ -1,5 +1,6 @@
 import 'dart:async';
 
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mongo_dart/mongo_dart.dart';
 
 import '../models/query.dart';
@@ -52,10 +53,15 @@ class MongoDb {
     mongoDb = Db(_address);
     _initialFunction = initial;
 
-    await connect();
-
-    // ignore: avoid_print
-    print("Mongo Connected: ${mongoDb.isConnected}");
+    var _r = await connect().timeout(Duration(seconds: 10), onTimeout: () {
+      // ignore: avoid_print
+      print("Mongo not connected");
+      return false;
+    });
+    if (_r) {
+      // ignore: avoid_print
+      print("Mongo Connected: ${mongoDb.isConnected}");
+    }
   }
 
   // void tr() async {
@@ -447,7 +453,7 @@ class MongoDb {
           await mongoDb.collection(query.collection!).insertOne(query.data!);
 
       // print("INSERT QUERY : : $dat");
-      if (dat != null) {
+      if (dat["success"]) {
         dat["success"] = true;
         return dat;
       } else {
@@ -459,9 +465,23 @@ class MongoDb {
   ///add user to db
   Future<Map<String, dynamic>?> addUserToDb(
       Map<String, dynamic>? args, String? deviceID) async {
-    return _operation(Query.allowAll(), () async {
+    return _operation(Query.allowAll(queryType: QueryType.register), () async {
+      if (args == null ||
+          !args.containsKey("user_mail") ||
+          !args.containsKey("password")) {
+        return {'success': false, "reason": "user_mail or password invalid"};
+      }
+
+      var qB = collection("users")
+        ..where("user_mail", isEqualTo: args["user_mail"]);
+
+      var mailEx = await exists(qB.toQuery(QueryType.exists, allowAll: true));
+      if (mailEx!["success"] && mailEx["exists"]) {
+        return {'success': false, "reason": "user_mail already use"};
+      }
+
       var secret = <String, dynamic>{
-        'user_mail': args!['user_mail'],
+        'user_mail': args['user_mail'],
         'password': args['password']
       };
 
@@ -480,7 +500,7 @@ class MongoDb {
 
       if ((res['ok'] != null && res2['ok'] != null) &&
           (res['ok'].toDouble() == 1.0 && res2['ok'].toDouble() == 1.0)) {
-        return {'success': true, 'user_id': open['user_id']};
+        return {'success': true, 'user': open};
       } else {
         return {'success': false};
       }
@@ -490,7 +510,7 @@ class MongoDb {
   ///confirm user
   Future<Map<String, dynamic>?> confirmUser(
       Map<String, dynamic>? args, String? deviceID) async {
-    return _operation(Query.allowAll(), () async {
+    return _operation(Query.allowAll(queryType: QueryType.login), () async {
       var userD = {
         'user_mail': args!['user_mail'],
         'password': args['password']
@@ -506,6 +526,7 @@ class MongoDb {
 
       // print("Encrypted User Data: $userDataEncrypted");
 
+      //ignore: unnecessary_null_comparison
       if (userDataEncrypted != null && userDataEncrypted['data'] != null) {
         var userData =
             await (encryptionService.decrypt3(userDataEncrypted['data'])
@@ -522,6 +543,7 @@ class MongoDb {
               .collection("users")
               .findOne(where.all('user_id', [userDataEncrypted['user_id']]));
 
+          //ignore: unnecessary_null_comparison
           if (userOpenData != null) {
             userOpenData['success'] = true;
             return {'success': true, 'secret': userData, 'open': userOpenData};
@@ -540,7 +562,7 @@ class MongoDb {
 
   ///log user connection
   Future<Map<String, dynamic>?> logConnection(Map<String, dynamic> args) async {
-    return _operation(Query.allowAll(), () async {
+    return _operation(Query.allowAll(queryType: QueryType.log), () async {
       var id = Statics.getRandomId(24);
       args['id'] = id;
       var res = await mongoDb

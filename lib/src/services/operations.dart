@@ -1,5 +1,6 @@
 import 'dart:async';
 
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mongo_dart/mongo_dart.dart';
 
 import '../models/listener.dart';
@@ -47,13 +48,14 @@ class Operation {
     ///
 
     if (data.type == 'register') {
-      sendMessage(
-          listener.client,
-          await SocketData.fromFullData({
-            'message_id': data.messageId,
-            'message_type': data.type,
-            'data': await _db.addUserToDb(data.data, listener.deviceID)
-          }).encrypt(listener.nonce, listener.cnonce));
+      var res = await SocketData.fromFullData({
+        'message_id': data.messageId,
+        'message_type': data.type,
+        'data': await _db.addUserToDb(data.data, listener.deviceID)
+      }).encrypt(listener.nonce, listener.cnonce);
+      sendMessage(listener.client, res);
+
+
       return 'ok';
     } else if (data.type == 'login') {
       var _dbRes = await (_db.confirmUser(data.data, listener.deviceID)

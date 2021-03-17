@@ -1,10 +1,12 @@
 import 'dart:async';
 
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mongo_dart/mongo_dart.dart';
 
 import '../models/listener.dart';
 import '../models/query.dart';
 import '../models/socket_data_model.dart';
+import '../models/user/current_user.dart';
 import '../models/web_socket_listener.dart';
 import 'mongo_db_service.dart';
 import 'permission_handler.dart';
@@ -26,6 +28,12 @@ typedef OnChange = Future<void> Function(
 
 ///
 typedef PeriodicTrigger = Future<void> Function();
+
+/// User logged in
+typedef OnUserLoggedIn = Future<void> Function(YazApiUser user);
+
+/// User register
+typedef OnUserRegister = Future<void> Function(YazApiUser user);
 
 ///
 TriggerService triggerService = TriggerService();
@@ -56,6 +64,26 @@ class TriggerService {
 
   ///
   Duration timeout = const Duration(seconds: 30);
+
+  final Map<String, OnUserLoggedIn> _userLoggedIn = {};
+
+  final Map<String, OnUserRegister> _userRegister = {};
+
+  ///
+  void onUserLoggedIn(String triggerName, OnUserLoggedIn onUserLoggedIn) {
+    _userLoggedIn[triggerName] = onUserLoggedIn;
+  }
+
+  ///
+  void onUserRegister(String triggerName, OnUserRegister onUserRegister) {
+    _userRegister[triggerName] = onUserRegister;
+  }
+
+  ///
+  void removeUserTrigger(String triggerName) {
+    _userLoggedIn.remove(triggerName);
+    _userRegister.remove(triggerName);
+  }
 
   ///
   void cancelPeriodic(String name) {
@@ -106,7 +134,6 @@ class TriggerService {
   ///
   void addListener(DbListener dbListener) {
     // //print("EKLENDI:::::: ${dbListener.id} \n\n\n\n");
-
 
     //print("Adding Listeners : ${dbListener.id}");
     if (_listeners[dbListener.id] == null) {
@@ -161,7 +188,6 @@ class TriggerService {
   Future<void> _notify(
       ObjectId? objectId, Map<String, dynamic> data, int millis) async {
     try {
-
       //print("Dinleyici Notify");
 
       if (_listeners.containsKey(objectId)) {
@@ -176,18 +202,12 @@ class TriggerService {
           }
         }
 
-
-
-
-
         var a = (queueLast[objectId] != null && queueLast[objectId] == millis);
         var b = (lastSends[objectId] != null &&
             DateTime.now().millisecondsSinceEpoch - lastSends[objectId]! >
                 2000);
 
         //print("A: $a    B: $b");
-
-
 
         if (a || b) {
           lastSends[objectId] = DateTime.now().millisecondsSinceEpoch;
@@ -262,22 +282,19 @@ class TriggerService {
     // ignore: lines_longer_than_80_chars
     //     ": ${_listeners[res["data"]["_id"]] == null ? null : _listeners[res["data"]["_id"]].length}");
 
-    print(_listeners);
-    print(res);
+    // print(_listeners);
+    // print(res);
 
     if (res.containsKey("data") && res["data"] != null) {
-
       var isListen = _listeners[res["data"]["_id"]] != null &&
           _listeners[res["data"]["_id"]]!.isNotEmpty;
 
       //print("is Listen : ${_listeners[res["data"]["_id"]]}");
 
       if (afterReq || isListen) {
-
-
-
         PermissionHandler.resource(query).then((value) {
-          for (var trig in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
+          for (var trig
+              in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
             trig(query, before, value).timeout(timeout, onTimeout: () {});
           }
           value["type"] = "update";
@@ -289,8 +306,6 @@ class TriggerService {
         }
       }
     }
-
-
   }
 
   /// Only Use Update Operation
@@ -328,7 +343,7 @@ class TriggerService {
                 _onUpdateTriggers[query.collection!]!.isNotEmpty,
             res);
         return res;
-        break;
+
       case MongoDbOperationType.delete:
         Map<String, dynamic> res;
         var req = _resourceRequiresDelete[query.collection!] ?? false;
@@ -340,19 +355,60 @@ class TriggerService {
         res = await interop();
         _triggerDeletes(query, before, res);
         return res;
-        break;
+
       case MongoDbOperationType.read:
         return interop();
-        break;
+
       case MongoDbOperationType.create:
         Map<String, dynamic> res;
         res = await interop();
         _triggerCreates(query, res);
         return res;
-        break;
 
-      default:
+      case MongoDbOperationType.login:
+        var res = await interop();
+        try {
+
+          if (res["success"]) {
+            var user = YazApiUser.fromJson(res["open"]);
+            if (_userLoggedIn.isNotEmpty) {
+              _triggerUserLoggedIn(user);
+            }
+          }
+          return res;
+        } on Exception {
+          return res;
+        }
+
+      case MongoDbOperationType.register:
+        var res = await interop();
+        try {
+
+          if (res["success"]) {
+            var user = YazApiUser.fromJson(res["user"]);
+            if (_userRegister.isNotEmpty) {
+              _triggerUserRegister(user);
+            }
+          }
+          return res;
+        } on Exception {
+          return res;
+        }
+
+      case MongoDbOperationType.log:
         return interop();
+    }
+  }
+
+  void _triggerUserRegister(YazApiUser user) {
+    for (var triggers in _userRegister.entries) {
+      triggers.value(user);
+    }
+  }
+
+  void _triggerUserLoggedIn(YazApiUser user) {
+    for (var triggers in _userLoggedIn.entries) {
+      triggers.value(user);
     }
   }
 }

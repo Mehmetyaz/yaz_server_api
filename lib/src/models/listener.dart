@@ -1,5 +1,6 @@
 
 import 'package:meta/meta.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mongo_dart/mongo_dart.dart';
 
 import '../extensions/date_time.dart';
@@ -40,7 +41,7 @@ class DbListener {
   ///
   bool get isOutDate {
     var dif = DateTime.now() - createDate;
-    return dif.inMinutes != null && dif.inMinutes >= _outDateMinute;
+    return dif.inMinutes >= _outDateMinute;
   }
 
   @override

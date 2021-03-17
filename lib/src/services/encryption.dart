@@ -111,7 +111,7 @@ class EncryptionService {
       {required Nonce cnonce,
       required Nonce nonce,
       Map<String, dynamic>? data}) async {
-    Uint8List _data = utf8.encode(json.encode(data)) as Uint8List;
+    var _data = utf8.encode(json.encode(data)) as Uint8List;
     return base64
         .encode(await _enc1Stage2(cnonce, await _enc1Stage1(nonce, _data)));
   }
@@ -185,7 +185,7 @@ class EncryptionService {
 
   ///Encrypt 2
   Future<String> encrypt2({Map<String, dynamic>? data}) async {
-    Uint8List _data = utf8.encode(json.encode(data)) as Uint8List;
+    var _data = utf8.encode(json.encode(data)) as Uint8List;
     return base64.encode(await _enc2Stage2(
         Nonce(<int>[54, 23, 55, 98, 5, 78, 2, 44, 88, 5, 63, 10]),
         await _enc2Stage1(

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import '../../services/encryption.dart';
 
 ///User Auth Type
@@ -21,11 +20,11 @@ enum AuthType {
 ///Access Token
 class AccessToken {
   ///
-  AccessToken.generateForGuess(AuthType this.authType, this.deviceID)
+  AccessToken.generateForGuess(this.authType, this.deviceID)
       : isHashed = false,
         isDecrypted = true,
         _token = null,
-        assert(authType != null, 'Auth Type must\'nt be null or undefined'),
+        // assert(authType, 'Auth Type must\'nt be null or undefined'),
         assert(
             authType == AuthType.guess,
             'This constructor for used only guess user '
@@ -33,7 +32,7 @@ class AccessToken {
 
   ///Generate for user
   AccessToken.generateForUser(
-      {required AuthType this.authType,
+      {required this.authType,
       required String this.mail,
       required this.deviceID,
       required String this.uId,
@@ -52,10 +51,9 @@ class AccessToken {
         isDecrypted = false;
 
   @override
-  String toString(){
+  String toString() {
     return "$authType $uId , $mail";
   }
-
 
   ///If Decrypted
   bool isDecrypted;
@@ -137,8 +135,8 @@ class AccessToken {
   /// Create access token encrypted from user info
   Future<String?> _encrypt() async {
     if (authType == AuthType.guess) {
-      _token = await encryptionService.encrypt2(
-          data: {'auth_type': 'guess', 'device_id': deviceID});
+      _token = await encryptionService
+          .encrypt2(data: {'auth_type': 'guess', 'device_id': deviceID});
       return _token;
     } else {
       _token = await encryptionService.encrypt2(data: {

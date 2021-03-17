@@ -1,5 +1,6 @@
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:yaz_server_api/yaz_server_api.dart';
+import '../../yaz_server_api.dart';
 
 import '../services/permission_handler.dart';
 import 'token/token.dart';
@@ -59,11 +60,20 @@ enum QueryType {
   streamQuery,
 
   ///
-  delete
+  delete,
+
+  ///
+  register,
+
+  ///
+  login,
+
+  /// Logging
+  log
 }
 
 ///
-MongoDbOperationType operationTypeFromQueryType(QueryType? type) {
+MongoDbOperationType operationTypeFromQueryType(QueryType type) {
   switch (type) {
     case QueryType.query:
       return MongoDbOperationType.read;
@@ -79,9 +89,12 @@ MongoDbOperationType operationTypeFromQueryType(QueryType? type) {
       return MongoDbOperationType.delete;
     case QueryType.streamQuery:
       return MongoDbOperationType.read;
-
-    default:
-      return MongoDbOperationType.read;
+    case QueryType.register:
+      return MongoDbOperationType.register;
+    case QueryType.login:
+      return MongoDbOperationType.login;
+    case QueryType.log:
+      return MongoDbOperationType.log;
   }
 }
 
@@ -191,37 +204,27 @@ class QueryBuilder {
 
   ///Query collection
   ///eg users , posts
-  String? _collection;
-
-  ///Query Type
-  ///update
-  ///create
-  ///delete
-  ///read
-  MongoDbOperationType? _operationType;
-
-  ///
-  QueryType? _queryType;
+  final String? _collection;
 
   ///Query filter
   ///
-  Map<String, dynamic> _filters = <String, dynamic>{};
+  final Map<String, dynamic> _filters = <String, dynamic>{};
 
   ///Query equals
   /// e.g. {user_name : "mehmedyaz"}   , {name : Mehmet}
-  Map<String, dynamic> _equals = <String, dynamic>{};
+  final Map<String, dynamic> _equals = <String, dynamic>{};
 
   ///
-  Map<String, dynamic> _notEquals = <String, dynamic>{};
+  final Map<String, dynamic> _notEquals = <String, dynamic>{};
 
   ///Sorts
-  Map<String, dynamic> _sorts = <String, Sorting>{};
+  final Map<String, dynamic> _sorts = <String, Sorting>{};
 
   ///
-  Map<String, bool> _fileds = <String, bool>{};
+  final Map<String, bool> _fileds = <String, bool>{};
 
   ///Data counts
-  int? _limit, _offset;
+  int? _limit = 1000, _offset = 0;
 
   ///
   Query toQuery(QueryType type, {AccessToken? token, bool allowAll = false}) {
@@ -248,8 +251,9 @@ class Query {
             "query_type must be an integer"),
         queryType = QueryType.values[map["query_type"]],
         token = AccessToken.fromToken(map['token']),
-        allowAll = false {
-    operationType = operationTypeFromQueryType(queryType);
+        allowAll = false,
+        operationType =
+            operationTypeFromQueryType(QueryType.values[map["query_type"]]) {
     collection = map['collection'];
     if (collection == null) {
       throw Exception('Collcetion Must be null');
@@ -272,7 +276,7 @@ class Query {
   ///AllowAll Query
   Query.create(
       {required this.collection,
-      this.queryType,
+      required this.queryType,
       this.token,
       this.filters = const <String, dynamic>{},
       this.equals = const <String, dynamic>{},
@@ -286,7 +290,7 @@ class Query {
 
   ///AllowAll Query
   Query.allowAll(
-      {this.queryType,
+      {required this.queryType,
       this.token,
       this.filters = const <String, dynamic>{},
       this.equals = const <String, dynamic>{},
@@ -315,10 +319,10 @@ class Query {
   ///create
   ///delete
   ///read
-  MongoDbOperationType? operationType;
+  MongoDbOperationType operationType;
 
   ///
-  QueryType? queryType;
+  QueryType queryType;
 
   ///Query filter
   ///

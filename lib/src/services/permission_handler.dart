@@ -16,7 +16,16 @@ enum MongoDbOperationType {
   read,
 
   ///Create Document
-  create
+  create,
+
+  /// User login op
+  login,
+
+  /// User register op
+  register,
+
+  ///
+  log
 }
 
 ///PermissionChecker
@@ -151,14 +160,14 @@ class PermissionHandler {
   Future<bool?> _checkRule(Query query) async {
     var checker = permissionChecker(query);
     if (checker.containsKey(query.collection)) {
-      var data = await checker[query.collection!]![query.operationType!]!()
+      var data = await checker[query.collection!]![query.operationType]!()
           .timeout(const Duration(seconds: 5), onTimeout: () {
         return false;
       });
       // print("PERMISSION CHECKED $data");
       return data;
     } else {
-      return defaultRules[query.operationType!];
+      return defaultRules[query.operationType];
     }
   }
 
@@ -182,9 +191,9 @@ class PermissionHandler {
     }
 
 
-    if (query.operationType == null) {
-      throw Exception('Query Type Must Not be null');
-    }
+    // if (query.operationType == null) {
+    //   throw Exception('Query Type Must Not be null');
+    // }
 
     if (query.operationType == MongoDbOperationType.update) {
       // ignore: unnecessary_null_comparison
