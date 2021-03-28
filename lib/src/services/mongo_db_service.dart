@@ -409,6 +409,24 @@ class MongoDb {
   }
 
   ///query single document
+  Future<Map<String, dynamic>?> count(Query query) async {
+    return _operation(query, () async {
+      var dat = <String, dynamic>{};
+      var res =
+          await mongoDb.collection(query.collection!).count(query.selector());
+      // ignore: unnecessary_null_comparison
+      if (res != null) {
+        dat['success'] = true;
+        // print("QUERY RESULT : $dat");
+        dat["count"] = res;
+        return dat;
+      } else {
+        return {'success': false, 'error': 'data_is_null'};
+      }
+    });
+  }
+
+  ///query single document
   Future<Map<String, dynamic>?> query(Query query) async {
     return _operation(query, () async {
       var dat =
@@ -452,8 +470,9 @@ class MongoDb {
       var dat =
           await mongoDb.collection(query.collection!).insertOne(query.data!);
 
-      // print("INSERT QUERY : : $dat");
-      if (dat["success"]) {
+      print("INSERT QUERY : : $dat");
+      if (dat["ok"] != null &&
+          (dat["ok"] == 1.0 || dat["ok"] == 1 || dat["ok"] == "1.0")) {
         dat["success"] = true;
         return dat;
       } else {

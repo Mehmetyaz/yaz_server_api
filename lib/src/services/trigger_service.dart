@@ -297,7 +297,7 @@ class TriggerService {
               in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
             trig(query, before, value).timeout(timeout, onTimeout: () {});
           }
-          value["type"] = "update";
+          value!["type"] = "update";
           notifyListeners(res["data"]["_id"], value);
         });
       } else {
@@ -368,7 +368,6 @@ class TriggerService {
       case MongoDbOperationType.login:
         var res = await interop();
         try {
-
           if (res["success"]) {
             var user = YazApiUser.fromJson(res["open"]);
             if (_userLoggedIn.isNotEmpty) {
@@ -383,7 +382,6 @@ class TriggerService {
       case MongoDbOperationType.register:
         var res = await interop();
         try {
-
           if (res["success"]) {
             var user = YazApiUser.fromJson(res["user"]);
             if (_userRegister.isNotEmpty) {

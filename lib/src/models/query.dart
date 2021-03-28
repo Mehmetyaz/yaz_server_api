@@ -63,13 +63,18 @@ enum QueryType {
   delete,
 
   ///
+  count,
+
+  ///
   register,
 
   ///
   login,
 
   /// Logging
-  log
+  log,
+
+
 }
 
 ///
@@ -95,6 +100,8 @@ MongoDbOperationType operationTypeFromQueryType(QueryType type) {
       return MongoDbOperationType.login;
     case QueryType.log:
       return MongoDbOperationType.log;
+    case QueryType.count:
+      return MongoDbOperationType.read;
   }
 }
 
@@ -478,6 +485,8 @@ class Query {
       }
     }
 
+    print("selector: ${builder.map}");
+
     return builder;
   }
 
@@ -531,3 +540,16 @@ enum Sorting {
   ///dsc
   descending
 }
+
+
+
+class YazAggregation {
+
+  a(){
+  }
+
+
+
+
+}
+

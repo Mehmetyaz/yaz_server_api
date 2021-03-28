@@ -55,7 +55,6 @@ class Operation {
       }).encrypt(listener.nonce, listener.cnonce);
       sendMessage(listener.client, res);
 
-
       return 'ok';
     } else if (data.type == 'login') {
       var _dbRes = await (_db.confirmUser(data.data, listener.deviceID)
@@ -167,6 +166,9 @@ class Operation {
           case QueryType.streamQuery:
             dbResponse = await _db.query(q);
             isListen = true;
+            break;
+          case QueryType.count:
+            dbResponse = await _db.count(q);
             break;
           default:
             break;

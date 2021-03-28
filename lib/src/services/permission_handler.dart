@@ -114,7 +114,7 @@ class PermissionHandler {
   }
 
   ///Resource
-  static Future<Map<String, dynamic>> resource(Query query) {
+  static Future<Map<String, dynamic>?> resource(Query query) {
     // print("RESOURCE GET : $query");
     return MongoDb().getResource(query);
   }
