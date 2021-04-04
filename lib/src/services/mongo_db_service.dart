@@ -24,8 +24,8 @@ MongoDb mongoDb = MongoDb();
 
 ///Mongo Db Service
 class MongoDb extends DatabaseApi {
-  ///Bu da singleton
-  ///localde çalışan bir mongo db manual db
+
+  ///
   factory MongoDb() => _instance;
 
   MongoDb._internal();
@@ -33,6 +33,9 @@ class MongoDb extends DatabaseApi {
   static final MongoDb _instance = MongoDb._internal();
   ///
   late Db mongoDb;
+
+
+
 
   //  String _hostName = 'mongodb://127.0.0.1';
   //  String _port = '9298';
@@ -272,7 +275,7 @@ class MongoDb extends DatabaseApi {
 
   /// Use for admin operation
   @override
-  Future<Map<String, dynamic>> getResource(Query query) {
+  Future<Map<String, dynamic>?> getResource(Query query) {
     return mongoDb.collection(query.collection!).findOne(query.selector());
   }
 
@@ -398,9 +401,8 @@ class MongoDb extends DatabaseApi {
       var dat =
           await mongoDb.collection(query.collection!).insertOne(query.data!);
 
-      print("INSERT QUERY : : ${dat.serverResponses}");
 
-      if (dat.success != null && dat.success) {
+      if (dat.success) {
         return {
           "success": dat.success,
         };

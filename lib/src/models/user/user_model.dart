@@ -1,10 +1,9 @@
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:json_annotation/json_annotation.dart';
+
 
 part 'user_model.g.dart';
 
 ///Dikimall User
-@JsonSerializable()
+
 class YazApiUserFront {
   /// Default
   YazApiUserFront(this.firstName, this.lastName, this.userID);
@@ -17,15 +16,12 @@ class YazApiUserFront {
   Map<String, dynamic> toJson() => _$YazApiUserToJson(this);
 
   ///User First Name
-  @JsonKey(name: "user_first_name")
   final String? firstName;
 
   ///User First Name
-  @JsonKey(name: "user_last_name")
   final String? lastName;
 
   ///User ID
-  @JsonKey(name: 'user_id', required: true)
   final String? userID;
 
   ///User Full Name

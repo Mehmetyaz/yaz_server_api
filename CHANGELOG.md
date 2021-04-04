@@ -1,4 +1,9 @@
 
+
+## [0.0.5] - 2021-04-04
+
+* Fix many bugs
+
 ## [0.0.4] - 2021-02-06
 
 * Null safety stable

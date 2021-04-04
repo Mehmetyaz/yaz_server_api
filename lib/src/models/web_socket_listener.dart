@@ -193,13 +193,15 @@ class WebSocketListener {
   bool operator ==(Object other) {
     if (other.runtimeType != WebSocketListener) {
       throw Exception(
-          "WebSocketListener not have equals operator with : ${other.runtimeType}");
+          "WebSocketListener not have "
+              "equals operator with : ${other.runtimeType}");
     } else if (other is WebSocketListener) {
       var socketListener = other;
       return deviceID == socketListener.deviceID;
     }
     throw Exception(
-        "WebSocketListener not have equals operator with : ${other.runtimeType}");
+        "WebSocketListener not have "
+            "equals operator with : ${other.runtimeType}");
   }
 
   ///Operation Class
@@ -289,11 +291,7 @@ class WebSocketListener {
       var stage1Data =
           await waitMessage(socketBroadcast, type: 'request_connection');
 
-
-
-
-      if (
-          stage1Data.fullData == null ||
+      if (stage1Data.fullData == null ||
           stage1Data.type == null ||
           stage1Data.messageId == null) {
         throw Exception('Message is null');
@@ -317,7 +315,6 @@ class WebSocketListener {
         service.connectRequests.remove(req);
       }
 
-
       ///log device id and request id
       var db = MongoDb();
       await db.logConnection({
@@ -325,7 +322,6 @@ class WebSocketListener {
         'deviceID': deviceID,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       });
-
 
       ///generate server side nonce
       nonce = Nonce.random();
@@ -553,49 +549,45 @@ class WebSocketListener {
     /**
      * Socket listener for each identified device
      */
-    subscription = socketBroadcast.listen(
-        (event) async {
-          ///data oluşturuluyor
+    subscription = socketBroadcast.listen((event) async {
+      ///data oluşturuluyor
 
-          try {
-            lastOnline = DateTime.now().millisecondsSinceEpoch;
-            if (event.runtimeType != String) {
-              // print(utf8.decode(event));
-            }
-            var data = SocketData.fromSocket(event);
+      try {
+        lastOnline = DateTime.now().millisecondsSinceEpoch;
+        if (event.runtimeType != String) {
+          // print(utf8.decode(event));
+        }
+        var data = SocketData.fromSocket(event);
 
-            if (data.type == 'error') {
-              sendMessage(client, data);
-            } else if (data.type == 'close') {
-              // print("CLOSE CLOSE CLOSE");
-              await close();
-            } else if (data.type == 'connection_confirmation') {
-              // print("connection_confirmation");
-            } else {
-              if (data.isEncrypted) {
-                try {
-                  if (cnonce != null && nonce != null) {
-                    await data.decrypt(nonce, cnonce);
-                  }
-
-                  await operation.operate(this, data);
-                } on Exception {
-                  // TODO:ADD ERROR
-                }
-              } else {
-                // print('DATA NULLLL : ${data.data}');
-              }
-            }
-          } on Exception {
-            // TODO:ADD ERROR
-          }
-        },
-        onError: (e) async {
-          // print(e);
+        if (data.type == 'error') {
+          sendMessage(client, data);
+        } else if (data.type == 'close') {
+          // print("CLOSE CLOSE CLOSE");
           await close();
-        },
-        cancelOnError: true,
-        onDone: close);
+        } else if (data.type == 'connection_confirmation') {
+          // print("connection_confirmation");
+        } else {
+          if (data.isEncrypted) {
+            try {
+              if (cnonce != null && nonce != null) {
+                await data.decrypt(nonce, cnonce);
+              }
+
+              await operation.operate(this, data);
+            } on Exception {
+              // TODO:ADD ERROR
+            }
+          } else {
+            // print('DATA NULLLL : ${data.data}');
+          }
+        }
+      } on Exception {
+        // TODO:ADD ERROR
+      }
+    }, onError: (e) async {
+      // print(e);
+      await close();
+    }, cancelOnError: true, onDone: close);
   }
 
   ///Check Timer

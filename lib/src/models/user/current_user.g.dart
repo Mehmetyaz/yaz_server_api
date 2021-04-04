@@ -7,8 +7,8 @@ part of 'current_user.dart';
 // **************************************************************************
 
 YazApiUser _$CurrentUserFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      requiredKeys: const ['user_id', 'user_mail', 'user_first_login']);
+  // $checkKeys(json,
+  //     requiredKeys: const ['user_id', 'user_mail', 'user_first_login']);
   return YazApiUser(
     json['user_first_name'] as String?,
     json['user_last_name'] as String?,

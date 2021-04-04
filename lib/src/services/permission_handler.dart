@@ -5,7 +5,7 @@ import '../models/token/token.dart';
 import 'mongo_db_service.dart';
 
 ///Mongo Db Operation Type
-enum MongoDbOperationType {
+enum DbOperationType {
   ///Update Document
   update,
 
@@ -29,12 +29,12 @@ enum MongoDbOperationType {
 }
 
 ///PermissionChecker
-typedef PermissionChecker = Map<String, Map<MongoDbOperationType, Checker>>
+typedef PermissionChecker = Map<String, Map<DbOperationType, Checker>>
     Function(Query query);
 
-Map<String, Map<MongoDbOperationType, Checker>> _defaultPermissionChecker(
+Map<String, Map<DbOperationType, Checker>> _defaultPermissionChecker(
     Query query) {
-  return <String, Map<MongoDbOperationType, Checker>>{};
+  return <String, Map<DbOperationType, Checker>>{};
 }
 
 ///
@@ -56,12 +56,12 @@ class PermissionHandler {
   PermissionChecker permissionChecker = _defaultPermissionChecker;
 
   ///Default Rule For All Fields by Operation Type
-  Map<MongoDbOperationType, bool> defaultRules = fillAllRules(rule: false);
+  Map<DbOperationType, bool> defaultRules = fillAllRules(rule: false);
 
   ///Deny
   // ignore: prefer_constructors_over_static_methods
-  static Map<MongoDbOperationType, bool> fillAllRules({bool rule = false}) =>
-      {for (var e in MongoDbOperationType.values) e: rule};
+  static Map<DbOperationType, bool> fillAllRules({bool rule = false}) =>
+      {for (var e in DbOperationType.values) e: rule};
 
   /// Parser for field name
   /// components.AY85swGc.vote
@@ -195,18 +195,18 @@ class PermissionHandler {
     //   throw Exception('Query Type Must Not be null');
     // }
 
-    if (query.operationType == MongoDbOperationType.update) {
+    if (query.operationType == DbOperationType.update) {
       // ignore: unnecessary_null_comparison
       if (resource == null) {
         throw Exception('Resource Data must not be null in update query');
       }
-    } else if (query.operationType == MongoDbOperationType.delete) {
+    } else if (query.operationType == DbOperationType.delete) {
       // ignore: unnecessary_null_comparison
       if (resource == null) {
         throw Exception('Resource Data must not be null in update query');
       }
-    } else if (!(query.operationType == MongoDbOperationType.read ||
-        query.operationType == MongoDbOperationType.create)) {
+    } else if (!(query.operationType == DbOperationType.read ||
+        query.operationType == DbOperationType.create)) {
       throw Exception(
           'Query Type must be [create] or [delete] or [update] or [read]');
     }

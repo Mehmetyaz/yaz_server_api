@@ -1,7 +1,5 @@
 import 'dart:async';
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:mongo_dart/mongo_dart.dart';
 
 import '../models/listener.dart';
 import '../models/query.dart';
@@ -24,7 +22,7 @@ typedef OnUpdate = Future<void> Function(
 
 ///
 typedef OnChange = Future<void> Function(
-    DbListener listener, MongoDbOperationType type, Map<String, dynamic> after);
+    DbListener listener, DbOperationType type, Map<String, dynamic> after);
 
 ///
 typedef PeriodicTrigger = Future<void> Function();
@@ -328,7 +326,7 @@ class TriggerService {
   Future<Map<String, dynamic>> triggerAndReturn(
       Query query, Interop interop) async {
     switch (query.operationType) {
-      case MongoDbOperationType.update:
+      case DbOperationType.update:
         Map<String, dynamic> res;
         var req = _resourceRequiresUpdate[query.collection!] ?? false;
         Map<String, dynamic>? before;
@@ -344,7 +342,7 @@ class TriggerService {
             res);
         return res;
 
-      case MongoDbOperationType.delete:
+      case DbOperationType.delete:
         Map<String, dynamic> res;
         var req = _resourceRequiresDelete[query.collection!] ?? false;
         Map<String, dynamic>? before;
@@ -356,16 +354,16 @@ class TriggerService {
         _triggerDeletes(query, before, res);
         return res;
 
-      case MongoDbOperationType.read:
+      case DbOperationType.read:
         return interop();
 
-      case MongoDbOperationType.create:
+      case DbOperationType.create:
         Map<String, dynamic> res;
         res = await interop();
         _triggerCreates(query, res);
         return res;
 
-      case MongoDbOperationType.login:
+      case DbOperationType.login:
         var res = await interop();
         try {
           if (res["success"]) {
@@ -379,7 +377,7 @@ class TriggerService {
           return res;
         }
 
-      case MongoDbOperationType.register:
+      case DbOperationType.register:
         var res = await interop();
         try {
           if (res["success"]) {
@@ -393,7 +391,7 @@ class TriggerService {
           return res;
         }
 
-      case MongoDbOperationType.log:
+      case DbOperationType.log:
         return interop();
     }
   }

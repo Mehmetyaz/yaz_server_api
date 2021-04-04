@@ -6,7 +6,8 @@ import 'package:meta/meta.dart';
 @immutable
 class WebSocketConnectRequest {
   ///
-  WebSocketConnectRequest({required HttpConnectionInfo this.connectionInfo, this.headers})
+  WebSocketConnectRequest(
+      {required HttpConnectionInfo this.connectionInfo, this.headers})
       : id =
             "${connectionInfo.remotePort}:${connectionInfo.remoteAddress.host}";
 

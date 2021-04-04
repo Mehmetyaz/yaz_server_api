@@ -25,18 +25,18 @@ Map<String, int> sortingToInt(Map<String, Sorting> listSorting) {
 }
 
 ///Type Cast
-MongoDbOperationType mongoDbOperationTypeCast(String type) {
+DbOperationType mongoDbOperationTypeCast(String type) {
   switch (type) {
     case 'read':
-      return MongoDbOperationType.read;
+      return DbOperationType.read;
     case 'update':
-      return MongoDbOperationType.update;
+      return DbOperationType.update;
     case 'delete':
-      return MongoDbOperationType.delete;
+      return DbOperationType.delete;
     case 'create':
-      return MongoDbOperationType.create;
+      return DbOperationType.create;
   }
-  return MongoDbOperationType.read;
+  return DbOperationType.read;
 }
 
 ///
@@ -78,30 +78,30 @@ enum QueryType {
 }
 
 ///
-MongoDbOperationType operationTypeFromQueryType(QueryType type) {
+DbOperationType operationTypeFromQueryType(QueryType type) {
   switch (type) {
     case QueryType.query:
-      return MongoDbOperationType.read;
+      return DbOperationType.read;
     case QueryType.listQuery:
-      return MongoDbOperationType.read;
+      return DbOperationType.read;
     case QueryType.insert:
-      return MongoDbOperationType.create;
+      return DbOperationType.create;
     case QueryType.update:
-      return MongoDbOperationType.update;
+      return DbOperationType.update;
     case QueryType.exists:
-      return MongoDbOperationType.create;
+      return DbOperationType.create;
     case QueryType.delete:
-      return MongoDbOperationType.delete;
+      return DbOperationType.delete;
     case QueryType.streamQuery:
-      return MongoDbOperationType.read;
+      return DbOperationType.read;
     case QueryType.register:
-      return MongoDbOperationType.register;
+      return DbOperationType.register;
     case QueryType.login:
-      return MongoDbOperationType.login;
+      return DbOperationType.login;
     case QueryType.log:
-      return MongoDbOperationType.log;
+      return DbOperationType.log;
     case QueryType.count:
-      return MongoDbOperationType.read;
+      return DbOperationType.read;
   }
 }
 
@@ -129,10 +129,12 @@ class QueryBuilder {
     }
   }
 
-  /// [ {"name" : "x" , "age" : 15} , {"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
+  /// [ {"name" : "x" , "age" : 15} ,
+  /// {"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
   ///
   /// filter("age", isGreaterThan: 20) => {"name" : "z" , "age" : 25}
-  /// filter("age", isGreaterOrEqualThan: 20) => [{"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
+  /// filter("age", isGreaterOrEqualThan: 20) =>
+  /// [{"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
   ///
   void filter(String fieldName,
       {dynamic isGreaterThan,
@@ -185,9 +187,11 @@ class QueryBuilder {
     _offset = offset;
   }
 
-  /// [ {"name" : "x" , "age" : 15} , {"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
+  /// [ {"name" : "x" , "age" : 15} ,
+  /// {"name" : "y" , "age" : 20} , {"name" : "z" , "age" : 25}]
   ///
-  /// sort("age" , Sorting.ascending)  => (first element) {"name" : "x" , "age" : 15}
+  /// sort("age" , Sorting.ascending)  =>
+  /// (first element) {"name" : "x" , "age" : 15}
   ///
   void sort(String fieldName, Sorting sorting) {
     _sorts[fieldName] = sorting;
@@ -326,7 +330,7 @@ class Query {
   ///create
   ///delete
   ///read
-  MongoDbOperationType operationType;
+  DbOperationType operationType;
 
   ///
   QueryType queryType;
@@ -485,7 +489,7 @@ class Query {
       }
     }
 
-    print("selector: ${builder.map}");
+
 
     return builder;
   }
@@ -543,13 +547,4 @@ enum Sorting {
 
 
 
-class YazAggregation {
-
-  a(){
-  }
-
-
-
-
-}
 

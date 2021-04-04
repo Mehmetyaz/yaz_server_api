@@ -1,7 +1,5 @@
 import 'dart:async';
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:mongo_dart/mongo_dart.dart';
 
 import '../models/listener.dart';
 import '../models/query.dart';

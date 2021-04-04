@@ -2,11 +2,10 @@ library yaz_server_api;
 
 import 'dart:io';
 
-import 'package:yaz_server_api/src/services/database/database_abstract.dart';
+import 'src/services/database/database_abstract.dart';
 
 import 'src/services/encryption.dart';
 import 'src/services/https_server.dart';
-import 'src/services/mongo_db_service.dart';
 
 export 'src/extensions/date_time.dart';
 export 'src/models/listener.dart';
@@ -50,11 +49,11 @@ class YazServerApi {
       required String tokenSecretKey2,
       required String deviceIdSecretKey,
       required Future<HttpServer> server,
-      required String mongoDbAddress,
+      required Map<String, dynamic> connectionConfiguration,
       Function? initialDb}) {
     encryptionService.init(clientSecretKey1, clientSecretKey2, tokenSecretKey1,
         tokenSecretKey2, deviceIdSecretKey);
-    databaseApi.init({"address": mongoDbAddress}, initial: initialDb);
+    databaseApi.init(connectionConfiguration, initial: initialDb);
     httpServerService.init(server);
   }
 }

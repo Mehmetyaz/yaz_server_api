@@ -7,7 +7,7 @@ part of 'user_model.dart';
 // **************************************************************************
 
 YazApiUserFront _$YazApiUserFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, requiredKeys: const ['user_id']);
+  // $checkKeys(json, requiredKeys: const ['user_id']);
   return YazApiUserFront(
     json['user_first_name'] as String?,
     json['user_last_name'] as String?,

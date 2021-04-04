@@ -3,14 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:http/http.dart';
-import 'package:path/path.dart' as path;
 
 import '../models/socket_types.dart';
-import '../models/token/token.dart';
 import 'encryption.dart';
-import 'media_service.dart';
 import 'ws_service.dart';
 
 ///
@@ -41,7 +36,7 @@ class HttpServerService {
       <String, HttpRequestHandler>{};
 
   late HttpServer _server;
-  final String _ima = "jpg";
+  // final String _ima = "jpg";
 
   ///
   Future<void> init(Future<HttpServer> httpServer,
@@ -197,62 +192,62 @@ class HttpServerService {
       }
     }
   }
+  //
+  // ///
+  // Future<void> _sendImage(HttpRequest request) async {
+  //   var q = Map.from(request.uri.queryParameters);
+  //
+  //   if (q["id"] == null) {
+  //     q["id"] = "image";
+  //   }
+  //
+  //   q["type"] = _imageTypes[q["type"]];
+  //
+  //   var separator = path.separator;
+  //
+  //   // print(q);
+  //
+  //   var newFile = File('${path.current}$separator'
+  //       'var$separator'
+  //       'images$separator'
+  //       '${q["id"]}$separator'
+  //       '${q["type"]}.$_ima');
+  //   if (newFile.existsSync()) {
+  //     try {
+  //       var raw = newFile.readAsBytesSync();
+  //       request.response.headers.set('Content-Type', 'image/$_ima');
+  //       request.response.headers.set('Content-Length', raw.length);
+  //       request.response.add(raw);
+  //       await request.response.close();
+  //     } on Exception {
+  //       //TODO: ADD ERROR
+  //       await request.response.close();
+  //     }
+  //   } else {
+  //     var newFile2 = File('${path.current}$separator'
+  //         'var$separator'
+  //         'images$separator'
+  //         'ex$separator'
+  //         '${q["id"]}$separator'
+  //         '${q["type"]}.png');
+  //
+  //     if (newFile2.existsSync()) {
+  //       var raw = newFile2.readAsBytesSync();
+  //       request.response.headers.set('Content-Type', 'image/png');
+  //       request.response.headers.set('Content-Length', raw.length);
+  //       request.response.add(raw);
+  //       await request.response.close();
+  //       q["id"] = "image";
+  //     }
+  //   }
+  // }
 
-  ///
-  Future<void> _sendImage(HttpRequest request) async {
-    var q = Map.from(request.uri.queryParameters);
-
-    if (q["id"] == null) {
-      q["id"] = "image";
-    }
-
-    q["type"] = _imageTypes[q["type"]];
-
-    var separator = path.separator;
-
-    // print(q);
-
-    var newFile = File('${path.current}$separator'
-        'var$separator'
-        'images$separator'
-        '${q["id"]}$separator'
-        '${q["type"]}.$_ima');
-    if (newFile.existsSync()) {
-      try {
-        var raw = newFile.readAsBytesSync();
-        request.response.headers.set('Content-Type', 'image/$_ima');
-        request.response.headers.set('Content-Length', raw.length);
-        request.response.add(raw);
-        await request.response.close();
-      } on Exception {
-        //TODO: ADD ERROR
-        await request.response.close();
-      }
-    } else {
-      var newFile2 = File('${path.current}$separator'
-          'var$separator'
-          'images$separator'
-          'ex$separator'
-          '${q["id"]}$separator'
-          '${q["type"]}.png');
-
-      if (newFile2.existsSync()) {
-        var raw = newFile2.readAsBytesSync();
-        request.response.headers.set('Content-Type', 'image/png');
-        request.response.headers.set('Content-Length', raw.length);
-        request.response.add(raw);
-        await request.response.close();
-        q["id"] = "image";
-      }
-    }
-  }
-
-  ///
-  final Map<String, String> _imageTypes = <String, String>{
-    "full": "profile",
-    "mid": "mid",
-    "thumb": "profile_thumb"
-  };
+  // ///
+  // final Map<String, String> _imageTypes = <String, String>{
+  //   "full": "profile",
+  //   "mid": "mid",
+  //   "thumb": "profile_thumb"
+  // };
 
   void _addHeaders() {
     for (var header in _headers.entries) {

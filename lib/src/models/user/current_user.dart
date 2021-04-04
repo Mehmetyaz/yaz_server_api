@@ -1,13 +1,11 @@
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:json_annotation/json_annotation.dart';
 
 import 'user_model.dart';
 
 part 'current_user.g.dart';
 
 ///Current User Class
-@JsonSerializable()
+
 class YazApiUser extends YazApiUserFront {
   ///
   YazApiUser(String? firstName, String? lastName, String? userID,
@@ -41,7 +39,6 @@ class YazApiUser extends YazApiUserFront {
   final DateTime createDate;
 
   ///user mail
-  @JsonKey(name: 'user_mail', required: true, )
   String mail;
 
   // ///user address for purchase
@@ -49,14 +46,12 @@ class YazApiUser extends YazApiUserFront {
   // UserAddress address;
 
   ///the session is first for this user
-  @JsonKey(name: 'user_first_login', required: true, )
   bool isFirstLogin;
 
   ///User Age
   int get age => DateTime.now().year - birthDate!.year;
 
   ///User Bio
-  @JsonKey(name: 'user_biography', defaultValue: '')
   String? biography;
 
   ///

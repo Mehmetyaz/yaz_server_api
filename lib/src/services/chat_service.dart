@@ -37,7 +37,8 @@ class ChatService {
   final Map<String?, Map<String?, WebSocketListener>> _onlineUsers =
       <String?, Map<String?, WebSocketListener>>{};
 
-  Map<String?, int> get onlineUsers => _onlineUsers.map((key, value) => MapEntry(key, value.length));
+  Map<String?, int> get onlineUsers =>
+      _onlineUsers.map((key, value) => MapEntry(key, value.length));
 
   ///
   void init() {
@@ -83,8 +84,6 @@ class ChatService {
     var isOnlineOwn =
         _onlineUsers[ownID] != null && _onlineUsers[ownID]!.isNotEmpty;
 
-
-
     await mongoDb.update(
         Query.allowAll(queryType: QueryType.update, limit: 10000, equals: {
       CONVERSATION_ID: chatId,
@@ -129,7 +128,6 @@ class ChatService {
 
   ///
   void removeOnline(String? userId, WebSocketListener listener) {
-
     if (_onlineUsers[userId] != null && _onlineUsers[userId]!.isNotEmpty) {
       _onlineUsers[userId]!.remove(listener);
     }
@@ -194,20 +192,11 @@ class ChatService {
     var ownID = isStarter ? chatDoc["starter_id"] : chatDoc["receiver_id"];
     var otherId = !isStarter ? chatDoc["starter_id"] : chatDoc["receiver_id"];
 
-
-
-
-
-
     var isOnline =
         _onlineUsers[otherId] != null && _onlineUsers[otherId]!.isNotEmpty;
 
     var isOnlineOwn =
         _onlineUsers[ownID] != null && _onlineUsers[ownID]!.isNotEmpty;
-
-
-
-
 
     if (isOnlineOwn) {
       var l = Map.from(_onlineUsers[ownID]!)..remove(listener.deviceID);
@@ -237,7 +226,10 @@ class ChatService {
   // ignore: avoid_positional_boolean_parameters
   void sendSeenToOnline(
       // ignore: avoid_positional_boolean_parameters
-      WebSocketListener _listener, bool own, Map<String, dynamic> chatDoc) {
+      WebSocketListener _listener,
+      // ignore: avoid_positional_boolean_parameters
+      bool own,
+      Map<String, dynamic> chatDoc) {
     sendAndWaitMessage(
         _listener,
         SocketData.create(
@@ -258,7 +250,10 @@ class ChatService {
   // ignore: avoid_positional_boolean_parameters
   void sendMessageToOnline(
       // ignore: avoid_positional_boolean_parameters
-      WebSocketListener _listener, bool own, Map<String, dynamic> chatDoc) {
+      WebSocketListener _listener,
+      // ignore: avoid_positional_boolean_parameters
+      bool own,
+      Map<String, dynamic> chatDoc) {
     sendAndWaitMessage(
         _listener,
         SocketData.create(
@@ -278,7 +273,8 @@ class ChatService {
   // void _addUserChatDoc(Map<String, dynamic> chatDoc, bool isStarter) {
   //   mongoDb.update(
   //     Query.allowAll(queryType: QueryType.update, equals: {
-  //       "user_id": isStarter ? chatDoc["receiver_id"] : chatDoc["starter_id"],
+  //
+  //"user_id": isStarter ? chatDoc["receiver_id"] : chatDoc["starter_id"],
   //     }, update: {
   //       "\$push": {"new_messages": chatDoc}
   //     })

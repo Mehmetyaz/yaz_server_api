@@ -2,15 +2,6 @@ import 'dart:async';
 
 import '../../../yaz_server_api.dart';
 
-
-
-
-
-
-
-
-
-
 ///
 abstract class DatabaseApi<T extends Exception> {
   /// Database connection configuration
@@ -24,7 +15,7 @@ abstract class DatabaseApi<T extends Exception> {
   Function? initialFunction;
 
   ///
-  Future<Map<String, dynamic>> getResource(Query query);
+  Future<Map<String, dynamic>?> getResource(Query query);
 
   ///
   Future<void> init(Map<String, dynamic> connectionConfig,
@@ -139,7 +130,7 @@ abstract class DatabaseApi<T extends Exception> {
   ///         };
   /// ```
   ///
-  /// if [success] false you can type [reason] field
+  /// if success false you can type reason field
   ///
   Future<Map<String, dynamic>?> update(Query _query);
 
@@ -153,6 +144,7 @@ abstract class DatabaseApi<T extends Exception> {
   ///         };
   /// ```
   ///
+  // ignore_for_file: comment_references
   /// if [success] false you can type [reason] field
   ///
   Future<Map<String, dynamic>?> delete(Query _query);
