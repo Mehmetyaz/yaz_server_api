@@ -117,7 +117,7 @@ class Operation {
           data.data!["message_id"] != null &&
           data.data!["object_id"] != null) {
         _triggerService.removeListener(
-            ObjectId.parse(data.data!["object_id"]), data.data!["message_id"]);
+            data.data!["object_id"], data.data!["message_id"]);
       }
       return "ok";
     } else if (data.type == 'query') {

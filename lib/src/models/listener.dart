@@ -1,7 +1,5 @@
 
 import 'package:meta/meta.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:mongo_dart/mongo_dart.dart';
 
 import '../extensions/date_time.dart';
 import 'web_socket_listener.dart';
@@ -27,7 +25,7 @@ class DbListener {
   final WebSocketListener listener;
 
   ///
-  final ObjectId? id;
+  final String? id;
 
   ///
   final String? collection;

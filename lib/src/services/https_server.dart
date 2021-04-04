@@ -27,7 +27,6 @@ const Map<String, dynamic> _defaultHeaders = {
 ///
 HttpServerService httpServerService = HttpServerService();
 
-
 ///
 class HttpServerService {
   ///
@@ -94,8 +93,8 @@ class HttpServerService {
         try {
           var soc = await WebSocketTransformer.upgrade(request);
           await wsService.addListener(soc);
-        } on Exception  {
-            //TODO: ADD ERROR
+        } on Exception {
+          //TODO: ADD ERROR
         }
       } else if (request.uri.toString().split("?").first == "/socket_request") {
         var conReq = WebSocketConnectRequest(
@@ -114,7 +113,7 @@ class HttpServerService {
               {'success': false, 'reason': 'Device already connected'})));
           await request.response.close();
         }
-      } else if (request.uri.toString().split("?").first == "/upload") {
+      } /*else if (request.uri.toString().split("?").first == "/upload") {
         try {
           var q = request.uri.queryParameters;
 
@@ -151,14 +150,14 @@ class HttpServerService {
                         r'--dart-http-boundary[^;]+\r\n[^;]+:[^;]+\r\ncontent-disposition: [^;]+; name=[^;]+\r\n\r\n'),
                     "")
                 .replaceFirst(RegExp(r'\r\n--dart-http-boundary[^;]+'), "");
-            var mediaServer = MediaService();
+            // var mediaServer = MediaService();
 
-            token = await token.decryptToken();
-
-            var id = await (mediaServer.addImage(
-                base64.decode(strippedStr), token.uId) as FutureOr<String>);
-            request.response.add(utf8.encode(id));
-            await request.response.close();
+            // token = await token.decryptToken();
+            //
+            // var id = await (mediaServer.addImage(
+            //     base64.decode(strippedStr), token.uId) as FutureOr<String>);
+            // request.response.add(utf8.encode(id));
+            // await request.response.close();
           }
         } on Exception  {
           await request.response.close();
@@ -192,7 +191,8 @@ class HttpServerService {
         await request.response.close();
       } else if (request.uri.toString().split("?").first == "/get") {
         await _sendImage(request);
-      } else {
+      }*/
+      else {
         await request.response.close();
       }
     }
@@ -224,7 +224,7 @@ class HttpServerService {
         request.response.headers.set('Content-Length', raw.length);
         request.response.add(raw);
         await request.response.close();
-      } on Exception  {
+      } on Exception {
         //TODO: ADD ERROR
         await request.response.close();
       }

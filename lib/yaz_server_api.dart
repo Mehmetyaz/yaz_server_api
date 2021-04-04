@@ -2,6 +2,7 @@ library yaz_server_api;
 
 import 'dart:io';
 
+import 'package:yaz_server_api/src/services/database/database_abstract.dart';
 
 import 'src/services/encryption.dart';
 import 'src/services/https_server.dart';
@@ -27,9 +28,22 @@ export 'src/services/ws_service.dart';
 
 ///
 class YazServerApi {
+  ///
+  YazServerApi({
+    required this.databaseApi,
+  });
 
   ///
-  static void init(
+  final EncryptionService encryptionService = EncryptionService();
+
+  ///
+  final DatabaseApi databaseApi;
+
+  ///
+  final HttpServerService httpServerService = HttpServerService();
+
+  ///
+  void init(
       {required String clientSecretKey1,
       required String clientSecretKey2,
       required String tokenSecretKey1,
@@ -40,7 +54,7 @@ class YazServerApi {
       Function? initialDb}) {
     encryptionService.init(clientSecretKey1, clientSecretKey2, tokenSecretKey1,
         tokenSecretKey2, deviceIdSecretKey);
-    mongoDb.init(mongoDbAddress, initial: initialDb);
+    databaseApi.init({"address": mongoDbAddress}, initial: initialDb);
     httpServerService.init(server);
   }
 }

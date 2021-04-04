@@ -144,17 +144,17 @@ class TriggerService {
   }
 
   ///
-  final Map<ObjectId?, Map<String?, DbListener>> _listeners =
-      <ObjectId?, Map<String?, DbListener>>{};
+  final Map<String?, Map<String?, DbListener>> _listeners =
+      <String?, Map<String?, DbListener>>{};
 
   /// millis epoch
-  final Map<ObjectId?, int> queueLast = <ObjectId?, int>{};
+  final Map<String?, int> queueLast = <String?, int>{};
 
   /// millis epoch
-  final Map<ObjectId?, int> lastSends = <ObjectId?, int>{};
+  final Map<String?, int> lastSends = <String?, int>{};
 
   ///
-  void removeListener(ObjectId objectId, String? messageID) {
+  void removeListener(String objectId, String? messageID) {
     if (_listeners[objectId] == null) {
       _listeners[objectId] = <String?, DbListener>{};
     }
@@ -164,8 +164,8 @@ class TriggerService {
     }
   }
 
-  final Map<ObjectId?, List<DbListener>> _listenersToRemove =
-      <ObjectId?, List<DbListener>>{};
+  final Map<String?, List<DbListener>> _listenersToRemove =
+      <String?, List<DbListener>>{};
 
   ///
   void _remove() {
@@ -186,7 +186,7 @@ class TriggerService {
   bool _removing = false;
 
   Future<void> _notify(
-      ObjectId? objectId, Map<String, dynamic> data, int millis) async {
+      String? objectId, Map<String, dynamic> data, int millis) async {
     try {
       //print("Dinleyici Notify");
 
@@ -270,7 +270,7 @@ class TriggerService {
   }
 
   ///
-  void notifyListeners(ObjectId? objectId, Map<String, dynamic> data) {
+  void notifyListeners(String? objectId, Map<String, dynamic> data) {
     var date = DateTime.now().millisecondsSinceEpoch;
     queueLast[objectId] = date;
     _notify(objectId, data, date);
