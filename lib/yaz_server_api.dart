@@ -23,7 +23,7 @@ export 'src/models/web_socket_listener.dart'
 export 'src/services/encryption.dart';
 export 'src/services/mongo_db_service.dart' show mongoDb;
 export 'src/services/permission_handler.dart'
-    show PermissionHandler, PermissionChecker, Checker ,DbOperationType;
+    show PermissionHandler, PermissionChecker, Checker, DbOperationType;
 
 ///
 late YazServerApi server;
@@ -70,6 +70,7 @@ class YazServerApi {
       required String deviceIdSecretKey,
       required Future<HttpServer> server,
       required Map<String, dynamic> connectionConfiguration,
+      bool initDatabase = true,
       Function? initialDb}) {
     encryptionService.init(clientSecretKey1, clientSecretKey2, tokenSecretKey1,
         tokenSecretKey2, deviceIdSecretKey);
