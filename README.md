@@ -91,15 +91,7 @@ class MongoDb extends DatabaseApi {
 	// Supported operations
 	@override
 	Future<Map<String, dynamic>?> update(Query _query);
-	Future<Map<String, dynamic>?> delete(Query _query);
-	Future<Map<String, dynamic>?> exists(Query query);
-	Future<Map<String, dynamic>?> count(Query query);
-	Future<Map<String, dynamic>?> listQuery(Query query);
-	Future<Map<String, dynamic>?> insertQuery(Query query);
-	Future<Map<String, dynamic>?> addUserToDb(  
-	  Map<String, dynamic>? args, String? deviceID);
-	Future<Map<String, dynamic>?> confirmUser(  
-	  Map<String, dynamic>? args, String? deviceID);
+	/// ......
 }
 ```
 
