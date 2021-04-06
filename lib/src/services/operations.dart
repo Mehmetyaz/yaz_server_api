@@ -1,6 +1,9 @@
 import 'dart:async';
 
 
+import 'package:yaz_server_api/src/services/database/database_abstract.dart';
+import 'package:yaz_server_api/yaz_server_api.dart';
+
 import '../models/listener.dart';
 import '../models/query.dart';
 import '../models/socket_data_model.dart';
@@ -21,7 +24,7 @@ class Operation {
 
   static final _instance = Operation._internal();
 
-  final MongoDb _db = MongoDb();
+  final DatabaseApi _db = server.databaseApi;
 
   final TriggerService _triggerService = TriggerService();
 

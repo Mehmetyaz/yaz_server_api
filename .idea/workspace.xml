@@ -26,17 +26,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/query.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/query.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/socket_types.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/socket_types.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/user/current_user.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user/current_user.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/user/current_user.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user/current_user.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/user/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user/user_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/user/user_model.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user/user_model.g.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/models/web_socket_listener.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/web_socket_listener.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/services/chat_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/chat_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/services/database/database_abstract.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/database/database_abstract.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/https_server.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/https_server.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/services/mongo_db_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/mongo_db_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/services/operations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/operations.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/services/permission_handler.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/permission_handler.dart" afterDir="false" />
@@ -73,8 +65,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../dikimall_server" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -201,7 +192,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617556221184</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="hatalar düzeltildi">
+      <created>1617573813051</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1617573813051</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:yaz_server_api/src/models/web_socket_listener.dart';
+
 import '../../yaz_server_api.dart';
 
 // ignore_for_file: constant_identifier_names , public_member_api_docs
@@ -42,7 +44,7 @@ class ChatService {
 
   ///
   void init() {
-    socketOperations
+    server.operationService
       ..addCustomOperation(SEND_MESSAGE_OPERATION, onRequestNewMessage)
       ..addCustomOperation(START_CHAT_OPERATION, onRequestNewConversation)
       // ..addCustomOperation(GET_CONVERSATIONS, onRequestConversation)
@@ -63,7 +65,7 @@ class ChatService {
 
     if (!(isStarter || isReceiver)) return null;
 
-    // await mongoDb.update(
+    // await server.databaseApi.update(
     //   Query.allowAll(queryType: QueryType.update, equals: {
     //     "chat_id": chatId
     //   }, update: {
@@ -84,7 +86,7 @@ class ChatService {
     var isOnlineOwn =
         _onlineUsers[ownID] != null && _onlineUsers[ownID]!.isNotEmpty;
 
-    await mongoDb.update(
+    await server.databaseApi.update(
         Query.allowAll(queryType: QueryType.update, limit: 10000, equals: {
       CONVERSATION_ID: chatId,
       "receiver_id": ownID
@@ -152,7 +154,7 @@ class ChatService {
     var token = AccessToken.fromToken(socketData.data!["token"]);
     var decryptToken = await token.decryptToken();
 
-    // var chatDoc = await mongoDb.query(
+    // var chatDoc = await server.databaseApi.query(
     //   Query.allowAll(queryType: QueryType.query, equals: {"chat_id": chatId})
     //     ..collection = CHAT_COLLECTIONS,
     // );
@@ -163,7 +165,7 @@ class ChatService {
     // if (!(isStarter || isReceiver)) return null;
     var time = socketData.data!["message"][MESSAGE_TIME] as int?;
     // chatDoc[LAST_ACTIVITY] = time;
-    await mongoDb.update(
+    await server.databaseApi.update(
       Query.allowAll(queryType: QueryType.update, equals: {
         CONVERSATION_ID: chatId
       }, update: {
@@ -176,12 +178,12 @@ class ChatService {
     );
 
     // chatDoc["init_messages"] = [socketData.data["message"]];
-    await mongoDb.insertQuery(Query.allowAll(
+    await server.databaseApi.insertQuery(Query.allowAll(
       queryType: QueryType.insert,
     )
       ..collection = MESSAGE_COLLECTION
       ..data = socketData.data!["message"]);
-    var chatDoc = await (mongoDb.query(
+    var chatDoc = await (server.databaseApi.query(
       Query.allowAll(
           queryType: QueryType.query, equals: {CONVERSATION_ID: chatId})
         ..collection = CHAT_COLLECTIONS,
@@ -271,7 +273,7 @@ class ChatService {
   }
 
   // void _addUserChatDoc(Map<String, dynamic> chatDoc, bool isStarter) {
-  //   mongoDb.update(
+  //   server.databaseApi.update(
   //     Query.allowAll(queryType: QueryType.update, equals: {
   //
   //"user_id": isStarter ? chatDoc["receiver_id"] : chatDoc["starter_id"],
@@ -292,7 +294,7 @@ class ChatService {
 
       var decryptToken = await token.decryptToken();
 
-      var doc = await (mongoDb.insertQuery(Query.allowAll(
+      var doc = await (server.databaseApi.insertQuery(Query.allowAll(
         queryType: QueryType.insert,
       )
         ..collection = CHAT_COLLECTIONS
@@ -319,7 +321,7 @@ class ChatService {
 //     var last = socketData.data[LAST_ACTIVITY];
 //     var decryptToken = await token.decryptToken();
 //
-//     var chats = (await mongoDb
+//     var chats = (await server.databaseApi
 //         .listQuery(Query.allowAll(queryType: QueryType.listQuery, filters: {
 //       "gte": {LAST_ACTIVITY: last}
 //     }, equals: {
@@ -330,7 +332,7 @@ class ChatService {
 //
 //     var chatList = chats.map((e) => e["chat_id"]);
 //
-//     var messages = (await mongoDb
+//     var messages = (await server.databaseApi
 //         .listQuery(Query.allowAll(queryType: QueryType.listQuery, filters: {
 //       "gte": {LAST_ACTIVITY: last}
 //     }, equals: {

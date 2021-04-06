@@ -1,5 +1,4 @@
-
-
+import '../../yaz_server_api.dart';
 import '../models/query.dart';
 import '../models/token/token.dart';
 import 'mongo_db_service.dart';
@@ -29,8 +28,8 @@ enum DbOperationType {
 }
 
 ///PermissionChecker
-typedef PermissionChecker = Map<String, Map<DbOperationType, Checker>>
-    Function(Query query);
+typedef PermissionChecker = Map<String, Map<DbOperationType, Checker>> Function(
+    Query query);
 
 Map<String, Map<DbOperationType, Checker>> _defaultPermissionChecker(
     Query query) {
@@ -56,12 +55,20 @@ class PermissionHandler {
   PermissionChecker permissionChecker = _defaultPermissionChecker;
 
   ///Default Rule For All Fields by Operation Type
-  Map<DbOperationType, bool> defaultRules = fillAllRules(rule: false);
+  Map<DbOperationType, bool> defaultRules = _fillAllRules(rule: false);
 
   ///Deny
   // ignore: prefer_constructors_over_static_methods
-  static Map<DbOperationType, bool> fillAllRules({bool rule = false}) =>
+  void fillAllRules({bool rule = false}){
+   defaultRules = _fillAllRules(rule: rule);
+  }
+
+
+  ///Deny
+  // ignore: prefer_constructors_over_static_methods
+  static Map<DbOperationType, bool> _fillAllRules({bool rule = false}) =>
       {for (var e in DbOperationType.values) e: rule};
+
 
   /// Parser for field name
   /// components.AY85swGc.vote
@@ -116,7 +123,7 @@ class PermissionHandler {
   ///Resource
   static Future<Map<String, dynamic>?> resource(Query query) {
     // print("RESOURCE GET : $query");
-    return MongoDb().getResource(query);
+    return server.databaseApi.getResource(query);
   }
 
   /// Only Use Update Operation
@@ -183,13 +190,11 @@ class PermissionHandler {
 
     if (!query.token!.isDecrypted) await query.token!.decryptToken();
 
-
     //TODO: Starts  with * : so implement chat doc
 
     if (query.collection!.startsWith("_")) {
       return query.token!.authType == AuthType.admin;
     }
-
 
     // if (query.operationType == null) {
     //   throw Exception('Query Type Must Not be null');

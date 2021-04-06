@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import '../../../yaz_server_api.dart';
-
+///Mongo Db Inter Operation
+typedef Interop = Future<Map<String, dynamic>> Function();
 ///
 abstract class DatabaseApi<T extends Exception> {
   /// Database connection configuration
@@ -44,18 +45,13 @@ abstract class DatabaseApi<T extends Exception> {
   /// dont forget return bool is connection success
   Future<bool> connect();
 
-  ///PermissionHandler
-  final PermissionHandler permissionHandler = PermissionHandler();
-
-  ///Trigger Service
-  final TriggerService triggerService = TriggerService();
 
   ///Mongo Db operasyonları standardı kalıp halinde
   Future<Map<String, dynamic>?> operation(Query query, Interop interop) async {
     try {
       ///Try Operation
-      if (await (permissionHandler.check(query) as FutureOr<bool>)) {
-        var dat = await triggerService.triggerAndReturn(query, interop);
+      if (await (    server.permissionHandler.check(query) as FutureOr<bool>)) {
+        var dat = await server.triggerService.triggerAndReturn(query, interop);
         //
         // print("DATA ON INTEROP TRIGGER $dat \n"
         //     "QUERY: ${query.collection}  ${query.queryType}");
@@ -82,8 +78,8 @@ abstract class DatabaseApi<T extends Exception> {
         try {
           ///Try Operation
 
-          if (await (permissionHandler.check(query) as FutureOr<bool>)) {
-            return await triggerService.triggerAndReturn(query, interop);
+          if (await (server.permissionHandler.check(query) as FutureOr<bool>)) {
+            return await server.triggerService.triggerAndReturn(query, interop);
           } else {
             // print('Permission Denied for'
             //     ' \ncollection ${query.collection}\n${query.queryType}');

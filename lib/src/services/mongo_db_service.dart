@@ -9,8 +9,7 @@ import 'database/database_abstract.dart';
 import 'encryption.dart';
 import 'permission_handler.dart';
 
-///Mongo Db Inter Operation
-typedef Interop = Future<Map<String, dynamic>> Function();
+
 
 ///
 class TokenDecryptedError implements Error {

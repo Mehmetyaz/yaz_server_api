@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:yaz_server_api/yaz_server_api.dart';
+
 import '../services/chat_service.dart';
 import '../services/encryption.dart';
 import '../services/mongo_db_service.dart';
@@ -316,7 +318,7 @@ class WebSocketListener {
       }
 
       ///log device id and request id
-      var db = MongoDb();
+      var db = server.databaseApi;
       await db.logConnection({
         'id': requestID,
         'deviceID': deviceID,
