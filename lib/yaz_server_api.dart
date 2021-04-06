@@ -26,16 +26,16 @@ export 'src/services/permission_handler.dart'
     show PermissionHandler, PermissionChecker, Checker, DbOperationType;
 
 ///
-late YazServerApi server;
+YazServerApi server = YazServerApi();
 
 ///
 class YazServerApi {
   ///
-  YazServerApi({
-    required this.databaseApi,
-  }) {
-    server = this;
-  }
+  factory YazServerApi() => _api;
+
+  YazServerApi._();
+
+  static final YazServerApi _api = YazServerApi._();
 
   ///
   final Operation operationService = Operation();
@@ -50,7 +50,7 @@ class YazServerApi {
   final EncryptionService encryptionService = EncryptionService();
 
   ///
-  final DatabaseApi databaseApi;
+  late DatabaseApi databaseApi;
 
   ///
   final HttpServerService httpServerService = HttpServerService();
@@ -71,12 +71,14 @@ class YazServerApi {
       required Future<HttpServer> httpServer,
       required Map<String, dynamic> connectionConfiguration,
       bool initDatabase = true,
+      DatabaseApi? databaseApi,
       Function? initialDb}) {
     server = this;
     encryptionService.init(clientSecretKey1, clientSecretKey2, tokenSecretKey1,
         tokenSecretKey2, deviceIdSecretKey);
     if (initDatabase) {
-      databaseApi.init(connectionConfiguration, initial: initialDb);
+      this.databaseApi = databaseApi!;
+      this.databaseApi.init(connectionConfiguration, initial: initialDb);
     }
     httpServerService.init(httpServer);
   }
