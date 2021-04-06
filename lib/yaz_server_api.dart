@@ -74,7 +74,9 @@ class YazServerApi {
       Function? initialDb}) {
     encryptionService.init(clientSecretKey1, clientSecretKey2, tokenSecretKey1,
         tokenSecretKey2, deviceIdSecretKey);
-    databaseApi.init(connectionConfiguration, initial: initialDb);
+    if (initDatabase) {
+      databaseApi.init(connectionConfiguration, initial: initialDb);
+    }
     httpServerService.init(server);
   }
 }
