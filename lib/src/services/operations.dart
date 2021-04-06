@@ -1,15 +1,11 @@
 import 'dart:async';
 
-
-import 'package:yaz_server_api/src/services/database/database_abstract.dart';
-import 'package:yaz_server_api/yaz_server_api.dart';
-
+import '../../yaz_server_api.dart';
 import '../models/listener.dart';
 import '../models/query.dart';
 import '../models/socket_data_model.dart';
 import '../models/token/token.dart';
 import '../models/web_socket_listener.dart';
-import 'mongo_db_service.dart';
 import 'trigger_service.dart';
 
 ///
@@ -24,7 +20,7 @@ class Operation {
 
   static final _instance = Operation._internal();
 
-  final DatabaseApi _db = server.databaseApi;
+
 
   final TriggerService _triggerService = TriggerService();
 
@@ -47,7 +43,7 @@ class Operation {
   Future<String> operate(WebSocketListener listener, SocketData data) async {
     ///data : full socket data
     ///
-
+    final _db = server.databaseApi;
     if (data.type == 'register') {
       var res = await SocketData.fromFullData({
         'message_id': data.messageId,

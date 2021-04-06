@@ -23,10 +23,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0549c849-1435-46bb-aab7-e3137d20d1a3" name="Default Changelist" comment="hatalar düzeltildi">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/yaz_server_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/yaz_server_api.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/models/web_socket_listener.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/web_socket_listener.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/services/chat_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/chat_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/services/operations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/operations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/services/permission_handler.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/permission_handler.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/services/trigger_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/trigger_service.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +220,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617726551920</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="hatalar düzeltildi">
+      <created>1617726892682</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1617726892682</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

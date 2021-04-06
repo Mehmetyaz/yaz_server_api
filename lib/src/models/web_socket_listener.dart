@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:yaz_server_api/yaz_server_api.dart';
+import '../../yaz_server_api.dart';
 
 import '../services/chat_service.dart';
 import '../services/encryption.dart';
-import '../services/mongo_db_service.dart';
 import '../services/operations.dart';
 import '../services/ws_service.dart';
 import 'query.dart';

@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:yaz_server_api/src/models/web_socket_listener.dart';
-
 import '../../yaz_server_api.dart';
+import '../models/web_socket_listener.dart';
 
 // ignore_for_file: constant_identifier_names , public_member_api_docs
 const String MESSAGE_TIME = "message_time";
