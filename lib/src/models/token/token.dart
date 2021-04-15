@@ -101,12 +101,12 @@ class AccessToken {
   ///Can reach uID, mail , password fields after decrypt
   Future<AccessToken> decryptToken() async {
     if (isHashed) {
-      var data = await (_decrypt() as FutureOr<Map<String, dynamic>>);
+      var data = await (_decrypt());
 
       isHashed = true;
       isDecrypted = true;
 
-      switch (_getAuthType(data['auth_type'])) {
+      switch (_getAuthType(data!['auth_type'])) {
         case AuthType.guess:
           authType = AuthType.guess;
           deviceID = data['device_id'];
