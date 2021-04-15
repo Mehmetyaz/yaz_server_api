@@ -127,13 +127,13 @@ Future<SocketData?> sendAndWaitMessage(
     id: waitingID != null
         ? waitingID
         : anyID
-            ? null
-            : socketData.messageId,
+        ? null
+        : socketData.messageId,
     type: waitingType != null
         ? waitingType
         : anyType
-            ? null
-            : socketData.type,
+        ? null
+        : socketData.type,
   );
 }
 
@@ -193,16 +193,14 @@ class WebSocketListener {
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
     if (other.runtimeType != WebSocketListener) {
-      throw Exception(
-          "WebSocketListener not have "
-              "equals operator with : ${other.runtimeType}");
+      throw Exception("WebSocketListener not have "
+          "equals operator with : ${other.runtimeType}");
     } else if (other is WebSocketListener) {
       var socketListener = other;
       return deviceID == socketListener.deviceID;
     }
-    throw Exception(
-        "WebSocketListener not have "
-            "equals operator with : ${other.runtimeType}");
+    throw Exception("WebSocketListener not have "
+        "equals operator with : ${other.runtimeType}");
   }
 
   ///Operation Class
@@ -292,6 +290,8 @@ class WebSocketListener {
       var stage1Data =
           await waitMessage(socketBroadcast, type: 'request_connection');
 
+      print("STAGE 1 DATA ALINDI ${stage1Data.fullData}");
+
       if (stage1Data.fullData == null ||
           stage1Data.type == null ||
           stage1Data.messageId == null) {
@@ -315,14 +315,22 @@ class WebSocketListener {
       if (service.connectRequests.contains(req)) {
         service.connectRequests.remove(req);
       }
+      print("LOG ONCESI");
 
       ///log device id and request id
       var db = server.databaseApi;
-      await db.logConnection({
+      var logRes = await db.logConnection({
         'id': requestID,
         'deviceID': deviceID,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
+      }).timeout(Duration(milliseconds: 500), onTimeout: () {
+        print("Log timeout");
+        return {"error": "log_timeout"};
+      }).catchError((e) {
+        print(e);
+        return {"error": e.toString()};
       });
+      print("LOG SONRASI $logRes");
 
       ///generate server side nonce
       nonce = Nonce.random();

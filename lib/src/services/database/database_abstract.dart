@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import '../../../yaz_server_api.dart';
+
 ///Mongo Db Inter Operation
 typedef Interop = Future<Map<String, dynamic>> Function();
+
 ///
 abstract class DatabaseApi<T extends Exception> {
   /// Database connection configuration
@@ -45,12 +47,12 @@ abstract class DatabaseApi<T extends Exception> {
   /// dont forget return bool is connection success
   Future<bool> connect();
 
-
   ///Mongo Db operasyonları standardı kalıp halinde
   Future<Map<String, dynamic>?> operation(Query query, Interop interop) async {
     try {
       ///Try Operation
-      if (await (    server.permissionHandler.check(query) as FutureOr<bool>)) {
+      if ((await (server.permissionHandler.check(query)) ??
+          false)) {
         var dat = await server.triggerService.triggerAndReturn(query, interop);
         //
         // print("DATA ON INTEROP TRIGGER $dat \n"
