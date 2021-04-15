@@ -290,7 +290,7 @@ class WebSocketListener {
       var stage1Data =
           await waitMessage(socketBroadcast, type: 'request_connection');
 
-      print("STAGE 1 DATA ALINDI ${stage1Data.fullData}");
+
 
       if (stage1Data.fullData == null ||
           stage1Data.type == null ||
@@ -315,7 +315,7 @@ class WebSocketListener {
       if (service.connectRequests.contains(req)) {
         service.connectRequests.remove(req);
       }
-      print("LOG ONCESI");
+
 
       ///log device id and request id
       var db = server.databaseApi;
@@ -330,7 +330,7 @@ class WebSocketListener {
         print(e);
         return {"error": e.toString()};
       });
-      print("LOG SONRASI $logRes");
+
 
       ///generate server side nonce
       nonce = Nonce.random();
