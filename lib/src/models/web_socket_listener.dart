@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../yaz_server_api.dart';
-
 import '../services/chat_service.dart';
 import '../services/encryption.dart';
 import '../services/operations.dart';
@@ -26,14 +25,16 @@ class TimeoutOnWaitingMessageException implements Exception {
 ///Wait Message from stream web socket
 /// [id] or [type] must defined
 Future<SocketData> waitMessage(Stream stream,
-    {String? id, String? type, Function? onTimeout}) async {
+    {String? id,
+    String? type,
+    Function? onTimeout,
+    Duration duration = const Duration(seconds: 30)}) async {
   try {
     // print(' $id $type');
     assert(id != null || type != null, "[id] or [type] must defined");
 
     var completer = Completer.sync();
-    var _subscription =
-        stream.timeout(const Duration(seconds: 30), onTimeout: (sink) {
+    var _subscription = stream.timeout(duration, onTimeout: (sink) {
       if (onTimeout != null) {
         onTimeout();
       }
@@ -290,8 +291,6 @@ class WebSocketListener {
       var stage1Data =
           await waitMessage(socketBroadcast, type: 'request_connection');
 
-
-
       if (stage1Data.fullData == null ||
           stage1Data.type == null ||
           stage1Data.messageId == null) {
@@ -316,7 +315,6 @@ class WebSocketListener {
         service.connectRequests.remove(req);
       }
 
-
       ///log device id and request id
       var db = server.databaseApi;
       var logRes = await db.logConnection({
@@ -330,7 +328,6 @@ class WebSocketListener {
         print(e);
         return {"error": e.toString()};
       });
-
 
       ///generate server side nonce
       nonce = Nonce.random();

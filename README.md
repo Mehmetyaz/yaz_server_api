@@ -98,8 +98,7 @@ class MongoDb extends DatabaseApi {
 #### Check Permission
 You can set default rules for all operation types
 ```dart
-permissionHandler  
-  ..defaultRules = PermissionHandler.fillAllRules(rule: true)
+permissionHandler.fillAllRules(rule: true)
 ```
 or
 ```dart
