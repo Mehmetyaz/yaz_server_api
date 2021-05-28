@@ -51,8 +51,7 @@ abstract class DatabaseApi<T extends Exception> {
   Future<Map<String, dynamic>?> operation(Query query, Interop interop) async {
     try {
       ///Try Operation
-      if ((await (server.permissionHandler.check(query)) ??
-          false)) {
+      if ((await (server.permissionHandler.check(query)) ?? false)) {
         var dat = await server.triggerService.triggerAndReturn(query, interop);
         //
         // print("DATA ON INTEROP TRIGGER $dat \n"
@@ -80,7 +79,7 @@ abstract class DatabaseApi<T extends Exception> {
         try {
           ///Try Operation
 
-          if (await (server.permissionHandler.check(query) as FutureOr<bool>)) {
+          if (await (server.permissionHandler.check(query)) ?? false) {
             return await server.triggerService.triggerAndReturn(query, interop);
           } else {
             // print('Permission Denied for'
@@ -93,7 +92,7 @@ abstract class DatabaseApi<T extends Exception> {
             };
           }
           // ignore: avoid_catches_without_on_clauses
-        } catch (e) {
+        } catch (e,s) {
           //TODO: ADD ERROR
           // ignore: lines_longer_than_80_chars
           // print('CONNECTED AND ERROR AGAIN . type :'
@@ -101,8 +100,14 @@ abstract class DatabaseApi<T extends Exception> {
 
           ///Return exception details
           ///should'nt connection error
-          return SocketData.fromFullData(
-              {'success': false, 'reason': (e.toString())}).data;
+          return {
+            'success': false,
+            "message_type": "error",
+            'reason': (e.toString()),
+            "data": {
+              "stack_trace" : s.toString()
+            }
+          };
         }
       } else {
         ///unsuccessful connection

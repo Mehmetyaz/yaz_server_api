@@ -270,9 +270,9 @@ class Query {
       throw Exception('Collcetion Must be null');
     }
 
-    if (map['token'] == null) {
-      throw Exception('Token must not be null');
-    }
+    // if (map['token'] == null) {
+    //   throw Exception('Token must not be null');
+    // }
 
     data = map['document'] ?? null;
     filters = map['filters'] ?? <String, dynamic>{};

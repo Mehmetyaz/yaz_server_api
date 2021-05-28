@@ -1,4 +1,8 @@
 
+## [0.0.6+9] - 2021-04-15
+
+* verification
+
 ## [0.0.6+7] - 2021-04-15
 
 * wait timeout custom duration

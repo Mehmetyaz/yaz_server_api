@@ -480,9 +480,14 @@ class MongoDb extends DatabaseApi {
       //ignore: unnecessary_null_comparison
       if (userDataEncrypted != null && userDataEncrypted['data'] != null) {
         var userData =
-            await (encryptionService.decrypt3(userDataEncrypted['data'])
-                as FutureOr<Map<String, dynamic>>);
+            await (encryptionService.decrypt3(userDataEncrypted['data']));
 
+        if (userData == null) {
+          return {
+            "success" : false,
+            'error': 'user_data_undefined'
+          };
+        }
         // print("Decrypted User Data: $userData");
         if (userData['user_mail'] == args['user_mail'] &&
             userData['password'] == args['password']) {

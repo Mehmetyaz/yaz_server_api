@@ -35,11 +35,11 @@ class ChatService {
   ///
   static final ChatService _instance = ChatService._internal();
 
-  final Map<String?, Map<String?, WebSocketListener>> _onlineUsers =
+  final Map<String?, Map<String?, WebSocketListener>> onlineUsers =
       <String?, Map<String?, WebSocketListener>>{};
 
-  Map<String?, int> get onlineUsers =>
-      _onlineUsers.map((key, value) => MapEntry(key, value.length));
+  Map<String?, int> get onlineUserCounts =>
+      onlineUsers.map((key, value) => MapEntry(key, value.length));
 
   ///
   void init() {
@@ -80,10 +80,10 @@ class ChatService {
     var ownID = isStarter ? chatDoc!["starter_id"] : chatDoc!["receiver_id"];
     var otherId = !isStarter ? chatDoc["starter_id"] : chatDoc["receiver_id"];
     var isOnline =
-        _onlineUsers[otherId] != null && _onlineUsers[otherId]!.isNotEmpty;
+        onlineUsers[otherId] != null && onlineUsers[otherId]!.isNotEmpty;
 
     var isOnlineOwn =
-        _onlineUsers[ownID] != null && _onlineUsers[ownID]!.isNotEmpty;
+        onlineUsers[ownID] != null && onlineUsers[ownID]!.isNotEmpty;
 
     await server.databaseApi.update(
         Query.allowAll(queryType: QueryType.update, limit: 10000, equals: {
@@ -100,14 +100,14 @@ class ChatService {
     //TODO: UPDATE MESSAGES
     socketData.data!.remove("token");
     if (isOnlineOwn) {
-      var l = Map.from(_onlineUsers[ownID]!)..remove(listener.deviceID);
+      var l = Map.from(onlineUsers[ownID]!)..remove(listener.deviceID);
       for (var _listener in l.entries) {
         sendSeenToOnline(_listener.value, true, socketData.data!);
       }
     }
 
     if (isOnline) {
-      var l = _onlineUsers[otherId]!;
+      var l = onlineUsers[otherId]!;
       for (var _listener in l.entries) {
         sendSeenToOnline(_listener.value, false, socketData.data!);
       }
@@ -129,15 +129,15 @@ class ChatService {
 
   ///
   void removeOnline(String? userId, WebSocketListener listener) {
-    if (_onlineUsers[userId] != null && _onlineUsers[userId]!.isNotEmpty) {
-      _onlineUsers[userId]!.remove(listener);
+    if (onlineUsers[userId] != null && onlineUsers[userId]!.isNotEmpty) {
+      onlineUsers[userId]!.remove(listener);
     }
   }
 
   ///
   void addOnline(String? userId, WebSocketListener listener) {
-    _onlineUsers[userId] ??= <String?, WebSocketListener>{};
-    _onlineUsers[userId]![listener.deviceID] = listener;
+    onlineUsers[userId] ??= <String?, WebSocketListener>{};
+    onlineUsers[userId]![listener.deviceID] = listener;
   }
 
   ///
@@ -194,13 +194,13 @@ class ChatService {
     var otherId = !isStarter ? chatDoc["starter_id"] : chatDoc["receiver_id"];
 
     var isOnline =
-        _onlineUsers[otherId] != null && _onlineUsers[otherId]!.isNotEmpty;
+        onlineUsers[otherId] != null && onlineUsers[otherId]!.isNotEmpty;
 
     var isOnlineOwn =
-        _onlineUsers[ownID] != null && _onlineUsers[ownID]!.isNotEmpty;
+        onlineUsers[ownID] != null && onlineUsers[ownID]!.isNotEmpty;
 
     if (isOnlineOwn) {
-      var l = Map.from(_onlineUsers[ownID]!)..remove(listener.deviceID);
+      var l = Map.from(onlineUsers[ownID]!)..remove(listener.deviceID);
       for (var _listener in l.entries) {
         sendMessageToOnline(_listener.value, true, {
           CONVERSATION_ID: chatDoc[CONVERSATION_ID],
@@ -211,7 +211,7 @@ class ChatService {
     }
 
     if (isOnline) {
-      var l = _onlineUsers[otherId]!;
+      var l = onlineUsers[otherId]!;
       for (var _listener in l.entries) {
         sendMessageToOnline(_listener.value, false, {
           "message": socketData.data!["message"],

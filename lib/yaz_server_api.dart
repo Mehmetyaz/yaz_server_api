@@ -2,6 +2,8 @@ library yaz_server_api;
 
 import 'dart:io';
 
+import 'package:yaz_server_api/src/services/auth_service.dart';
+
 import 'src/services/chat_service.dart';
 import 'src/services/database/database_abstract.dart';
 import 'src/services/encryption.dart';
@@ -72,6 +74,8 @@ class YazServerApi {
       required Map<String, dynamic> connectionConfiguration,
       bool initDatabase = true,
       DatabaseApi? databaseApi,
+      required String mail,
+      required String pass,
       Function? initialDb}) {
     server = this;
     encryptionService.init(clientSecretKey1, clientSecretKey2, tokenSecretKey1,
@@ -80,6 +84,7 @@ class YazServerApi {
       this.databaseApi = databaseApi!;
       this.databaseApi.init(connectionConfiguration, initial: initialDb);
     }
+    AuthService().init(mail, pass);
     httpServerService.init(httpServer);
   }
 }
