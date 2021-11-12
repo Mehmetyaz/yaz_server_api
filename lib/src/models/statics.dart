@@ -1,14 +1,11 @@
-
-
 import 'dart:math';
 import 'dart:typed_data';
 
-
 import '../../yaz_server_api.dart';
+
 // ignore_for_file: prefer_constructors_over_static_methods
 ///Static functions
-mixin Statics  {
-
+mixin Statics {
 /*  ///Generate token with data
   static Future<Uint8List> generateToken(
       Nonce nonce, Nonce cnonce, Map<String, dynamic> data) async {
@@ -17,7 +14,7 @@ mixin Statics  {
   }*/
 
   ///Get random id defined length
-  static String? getRandomId(int len) {
+  static String getRandomId(int len) {
     var _characters =
         'ABCDEFGHIJKLMNOPRSTUQYZXWabcdefghijqklmnoprstuvyzwx0123456789';
     var _listChar = _characters.split('');
@@ -29,15 +26,11 @@ mixin Statics  {
       var _r = _randNum.nextInt(_lentList);
       _randId.add(_listChar[_r]);
     }
-    String? id;
+    var id = StringBuffer();
     for (var c in _randId) {
-      if (id == null) {
-        id = c;
-      } else {
-        id += c;
-      }
+      id.write(c);
     }
-    return id;
+    return id.toString();
   }
 
   ///Nonce from List<dynamic>
@@ -65,17 +58,4 @@ mixin Statics  {
     }
     return Uint8List.fromList(nListInt);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

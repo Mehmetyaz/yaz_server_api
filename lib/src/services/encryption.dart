@@ -62,8 +62,9 @@ class EncryptionService {
 
   ///
   Uint8List mergeMac(SecretBox secretBox) {
-    return Uint8List.fromList(
-        []..addAll(secretBox.mac.bytes)..addAll(secretBox.cipherText));
+    return Uint8List.fromList([]
+      ..addAll(secretBox.mac.bytes)
+      ..addAll(secretBox.cipherText));
   }
 
   ///
@@ -287,5 +288,18 @@ class EncryptionService {
       aad: [12, 12, 10],
     );
     return base64.encode(mergeMac(encrypted));
+  }
+
+  ///
+  Future<String> encryptToken(Map<String, dynamic> payload) async {
+    var h = {"alg": "HS512", "typ": "JWT"};
+    var base64H = base64.encode(utf8.encode(json.encode(h)));
+    var base64P = base64.encode(utf8.encode(json.encode(payload)));
+    var macMessage = base64.encode(utf8.encode("$base64H.$base64P"));
+    var alg = AesCtr.with256bits(macAlgorithm: Hmac.sha512());
+
+    var mac = await alg.encrypt(utf8.encode(macMessage),
+        secretKey: SecretKey(__tokenSecretKey1.codeUnits));
+    return "$base64H.$base64P.${mac.cipherText}";
   }
 }

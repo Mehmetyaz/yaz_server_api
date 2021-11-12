@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cryptography/cryptography.dart';
+
 import '../../yaz_server_api.dart';
 import '../models/socket_data_model.dart';
 import '../models/web_socket_listener.dart';
@@ -31,6 +33,8 @@ class AuthService {
   ///
   final VerificationService verificationService = VerificationService();
 
+
+
   ///
   Future<void> setNewPassword(
       WebSocketListener listener, SocketData socketData) async {
@@ -41,7 +45,6 @@ class AuthService {
 
       var res = await verificationService.checkVerification(
           data["id"], "password_reset");
-
 
       if (res == null) return;
 
@@ -75,7 +78,7 @@ class AuthService {
       var update = await server.databaseApi.update(
         Query.allowAll(
             queryType: QueryType.update,
-            equals: {"user_id": userDoc!["user_id"]})
+            equals: {"user_id": userDoc["user_id"]})
           ..collection = "users_secret"
           ..update = {
             "\$set": {'data': secretEncrypted}
@@ -143,8 +146,7 @@ class AuthService {
           authType: AuthType.admin,
           mail: _dbRes['secret']['user_mail'],
           deviceID: listener.deviceID!,
-          uId: _dbRes['open']['user_id'],
-          passWord: _dbRes['secret']['password']);
+          uId: _dbRes['open']['user_id']);
       _dbRes['open']['token'] = await token.encryptedToken;
     }
     // print(_dbRes['open']);
@@ -179,8 +181,7 @@ class AuthService {
           authType: AuthType.loggedIn,
           mail: _dbRes['secret']['user_mail'],
           deviceID: listener.deviceID!,
-          uId: _dbRes['open']['user_id'],
-          passWord: _dbRes['secret']['password']);
+          uId: _dbRes['open']['user_id']);
       _dbRes['open']['token'] = await token.encryptedToken;
     }
     // print(_dbRes['open']);

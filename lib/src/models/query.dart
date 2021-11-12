@@ -73,8 +73,6 @@ enum QueryType {
 
   /// Logging
   log,
-
-
 }
 
 ///
@@ -282,6 +280,8 @@ class Query {
     update = map['update'] ?? <String, dynamic>{};
     limit = map['limit'] ?? 1000;
     offset = map['offset'] ?? 0;
+    fileds = (map["fields"] as Map<String, dynamic>? ?? <String, dynamic>{})
+        .cast<String, bool>();
   }
 
   ///AllowAll Query
@@ -294,6 +294,7 @@ class Query {
       this.sorts = const <String, dynamic>{},
       this.notEquals = const <String, dynamic>{},
       this.update = const <String, dynamic>{},
+      this.fileds = const <String, bool>{},
       this.limit = 1000,
       required this.allowAll,
       this.offset = 0})
@@ -307,6 +308,7 @@ class Query {
       this.equals = const <String, dynamic>{},
       this.sorts = const <String, dynamic>{},
       this.update = const <String, dynamic>{},
+      this.fileds = const <String, bool>{},
       this.limit = 1000,
       this.offset = 0})
       : allowAll = true,
@@ -489,8 +491,6 @@ class Query {
       }
     }
 
-
-
     return builder;
   }
 
@@ -544,7 +544,3 @@ enum Sorting {
   ///dsc
   descending
 }
-
-
-
-

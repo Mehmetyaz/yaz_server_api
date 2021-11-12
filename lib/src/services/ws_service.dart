@@ -7,7 +7,6 @@ import '../models/web_socket_listener.dart';
 ///
 WebSocketService socketService = WebSocketService();
 
-
 ///
 class WebSocketService {
   ///
@@ -33,8 +32,10 @@ class WebSocketService {
   Future<void> addListener(WebSocket client) async {
     var listener = WebSocketListener(client);
     await listener.listen();
-    if ((await listener.connectionRequest().onError((dynamic error,
-        stackTrace) => false) ?? false)) {
+    if ((await listener
+            .connectionRequest()
+            .onError((dynamic error, stackTrace) => false) ??
+        false)) {
       if (activeListeners.contains(listener)) {
         activeListeners.remove(listener);
         await closeListener(listener);
@@ -53,7 +54,6 @@ class WebSocketService {
     }
   }
 
-
   ///
   Future<void> closeListener(WebSocketListener listener) async {
     if (listener.timer != null && listener.timer!.isActive) {
@@ -69,7 +69,6 @@ class WebSocketService {
     listener
       ..timer = null
       ..client = null;
-
 
 /*    if (!listener.streamController.isClosed) {
       await listener.streamController.close();

@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:cryptography/cryptography.dart';
 
 import '../../services/encryption.dart';
 
@@ -35,8 +38,7 @@ class AccessToken {
       {required this.authType,
       required String this.mail,
       required this.deviceID,
-      required String this.uId,
-      required String this.passWord})
+      required String this.uId})
       : isHashed = false,
         isDecrypted = true,
         _token = null,
@@ -73,8 +75,6 @@ class AccessToken {
   ///user mail (if logged)
   String? mail;
 
-  ///user password (if logged)
-  String? passWord;
 
   ///Token
   String? _token;
@@ -116,7 +116,6 @@ class AccessToken {
           deviceID = data['device_id'];
           uId = data['user_id'];
           mail = data['mail'];
-          passWord = data['password'];
           break;
         default:
           authType = AuthType.undefined;
@@ -143,7 +142,6 @@ class AccessToken {
         'auth_type': 'auth',
         'device_id': deviceID,
         'user_id': uId,
-        'password': passWord,
         'mail': mail
       });
       return _token;
@@ -178,4 +176,50 @@ class AccessToken {
       return 'undefined';
     }
   }
+}
+
+///
+Future<Map<String, dynamic>?> checkToken(String token) async {
+  var comps = token.split(".");
+
+  if (comps.length != 3) {
+    throw Exception("Token format unknown");
+  }
+
+  try {
+    var mes = "${comps[0]}.${comps[1]}";
+    var mac = comps[2];
+    var hm = Hmac.sha512();
+
+    var secret =
+    SecretBox(utf8.encode(mes), nonce: [], mac: Mac(base64Url.decode(mac)));
+    await secret.checkMac(
+        macAlgorithm: hm,
+        secretKey: SecretKey(utf8.encode("11118111111155111511111191111112")),
+        aad: []);
+
+    var p = json.decode(utf8.decode(base64Url.decode(comps[1])));
+
+    return p;
+  } on Exception catch (e) {
+    print(e);
+    return null;
+  }
+}
+
+///
+Future<String> encryptToken(Map<String, dynamic> payload) async {
+  var h = {"alg": "HS512", "typ": "JWT"};
+  var base64H = base64Url.encode(utf8.encode(json.encode(h)));
+  var base64P = base64Url.encode(utf8.encode(json.encode(payload)));
+  var macMessage = "$base64H.$base64P";
+  var mac = await Hmac.sha512().calculateMac(utf8.encode(macMessage),
+      secretKey: SecretKey(utf8.encode("11118111111155111511111191111112")),
+      aad: [],
+      nonce: []);
+
+  //
+  // print("PPPP: ${base64.decode(utf8.decode(mac.mac.bytes))}");
+
+  return "$base64H.$base64P.${base64Url.encode(mac.bytes)}";
 }

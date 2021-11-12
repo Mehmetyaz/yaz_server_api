@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:yaz_server_api/yaz_server_api.dart';
+import '../../yaz_server_api.dart';
 
 ///
 enum VerificationStatus {
@@ -71,6 +71,7 @@ class VerificationSession {
             "used": false
           });
 
+    print("Verif Creating: $res");
     if (res != null) {
       return VerificationSession._(
           type: type,

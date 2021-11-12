@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-
 import '../models/socket_types.dart';
 import 'encryption.dart';
 import 'ws_service.dart';
@@ -104,150 +103,18 @@ class HttpServerService {
           await request.response.close();
         } else {
           request.response.headers.set('Content-Type', 'application/json');
+          request.response.statusCode = 400;
           request.response.add(utf8.encode(json.encode(
               {'success': false, 'reason': 'Device already connected'})));
           await request.response.close();
         }
-      } /*else if (request.uri.toString().split("?").first == "/upload") {
-        try {
-          var q = request.uri.queryParameters;
-
-          // print(q);
-
-          if (q["token"] == null) {
-            await request.response.close();
-          } else {
-            var token = AccessToken.fromToken(q["token"]!.replaceAll(" ", "+"));
-
-            ///
-            //ignore: unawaited_futures, cascade_invocations
-            token.decryptToken();
-            var stream = request.asBroadcastStream();
-
-            var file = MultipartFile.fromBytes(
-                "file", mergeList(await stream.toList()));
-            var byte = file.finalize();
-            var byteData = await byte.toBytes();
-
-            // print("Doc Length :  : : :   :  :  : ${byteData.length}");
-            //
-            // print("Base64 Doc: ${utf8.decode(byteData.sublist(0, 162))}");
-
-            var str = utf8.decode(byteData);
-
-            // print("DOC: ${utf8.decode(byteData).substring(0, 500)}");
-
-            var imageStr =
-                str.replaceAll(RegExp(r'data:image/[^;]+;base64,'), "");
-            var strippedStr = imageStr
-                .replaceFirst(
-                    RegExp(
-                        r'--dart-http-boundary[^;]+\r\n[^;]+:[^;]+\r\ncontent-disposition: [^;]+; name=[^;]+\r\n\r\n'),
-                    "")
-                .replaceFirst(RegExp(r'\r\n--dart-http-boundary[^;]+'), "");
-            // var mediaServer = MediaService();
-
-            // token = await token.decryptToken();
-            //
-            // var id = await (mediaServer.addImage(
-            //     base64.decode(strippedStr), token.uId) as FutureOr<String>);
-            // request.response.add(utf8.encode(id));
-            // await request.response.close();
-          }
-        } on Exception  {
-          await request.response.close();
-          //TODO: ADD ERROR
-        }
-      } else if (request.uri.toString().split("?").first == "/upload_video") {
-//          var stream = request.asBroadcastStream();
-//          int i = 0;
-//          stream.listen((event) {
-//            print(event.length);
-//            i+=event.length;
-//          });
-//          print(i);
-//
-//          var file =
-//              MultipartFile.
-//              fromBytes("file", mergeList(await stream.toList()));
-//          var byte = await file.finalize();
-//          var byteData = await byte.toBytes();
-//
-//          print("Doc Length :  : : :   :  :  : ${byteData.length}");
-//
-//          var str = utf8.decode(byteData);
-//
-//          var imageStr = str.split(RegExp(r'data:video/[^;]+;base64,'))[1];
-//          var strippedStr = imageStr.split("\r\n--dart-http-boundary")[0];
-//
-//          var mediaServer = MediaService();
-//          var id = await mediaServer.addVideo(base64.decode(strippedStr));
-//          request.response.add(utf8.encode(id));
-        await request.response.close();
-      } else if (request.uri.toString().split("?").first == "/get") {
-        await _sendImage(request);
-      }*/
-      else {
+      } else if (true) {
+        //TODO:
+      } else {
         await request.response.close();
       }
     }
   }
-  //
-  // ///
-  // Future<void> _sendImage(HttpRequest request) async {
-  //   var q = Map.from(request.uri.queryParameters);
-  //
-  //   if (q["id"] == null) {
-  //     q["id"] = "image";
-  //   }
-  //
-  //   q["type"] = _imageTypes[q["type"]];
-  //
-  //   var separator = path.separator;
-  //
-  //   // print(q);
-  //
-  //   var newFile = File('${path.current}$separator'
-  //       'var$separator'
-  //       'images$separator'
-  //       '${q["id"]}$separator'
-  //       '${q["type"]}.$_ima');
-  //   if (newFile.existsSync()) {
-  //     try {
-  //       var raw = newFile.readAsBytesSync();
-  //       request.response.headers.set('Content-Type', 'image/$_ima');
-  //       request.response.headers.set('Content-Length', raw.length);
-  //       request.response.add(raw);
-  //       await request.response.close();
-  //     } on Exception {
-  //       //TODO: ADD ERROR
-  //       await request.response.close();
-  //     }
-  //   } else {
-  //     var newFile2 = File('${path.current}$separator'
-  //         'var$separator'
-  //         'images$separator'
-  //         'ex$separator'
-  //         '${q["id"]}$separator'
-  //         '${q["type"]}.png');
-  //
-  //     if (newFile2.existsSync()) {
-  //       var raw = newFile2.readAsBytesSync();
-  //       request.response.headers.set('Content-Type', 'image/png');
-  //       request.response.headers.set('Content-Length', raw.length);
-  //       request.response.add(raw);
-  //       await request.response.close();
-  //       q["id"] = "image";
-  //     }
-  //   }
-  // }
-
-  // ///
-  // final Map<String, String> _imageTypes = <String, String>{
-  //   "full": "profile",
-  //   "mid": "mid",
-  //   "thumb": "profile_thumb"
-  // };
 
   void _addHeaders() {
     for (var header in _headers.entries) {

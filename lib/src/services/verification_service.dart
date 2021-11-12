@@ -21,9 +21,9 @@ class VerificationService {
   void init(String mail, String pass) {
     this.mail = mail;
     this.pass = pass;
-    server.operationService..addCustomOperation(
-        "verification_code", onVerify)..addCustomOperation(
-        "verification_request", onRequest);
+    server.operationService
+      ..addCustomOperation("verification_code", onVerify)
+      ..addCustomOperation("verification_request", onRequest);
   }
 
   ///
@@ -52,23 +52,24 @@ class VerificationService {
         print('Problem: ${p.code}: ${p.msg}');
       }
     }
+
     // DONE
 
-    var connection = PersistentConnection(smtpServer);
+    /*var connection = PersistentConnection(smtpServer);
 
     // Send the first message
     await connection.send(message);
 
     // close the connection
-    await connection.close();
+    await connection.close();*/
   }
 
   ///
   Map<String, VerificationSession> verifications = {};
 
   ///
-  Future<void> onVerificationUse(WebSocketListener listener,
-      SocketData data) async {
+  Future<void> onVerificationUse(
+      WebSocketListener listener, SocketData data) async {
     if (data.data == null) return;
 
     var res = await useVerification(
@@ -77,8 +78,7 @@ class VerificationService {
         token: data.data!["token"],
         device: listener.deviceID!);
 
-    sendMessage(listener.client, data.response({})
-      ..success = true);
+    sendMessage(listener.client, data.response({})..success = true);
     return;
   }
 
@@ -92,19 +92,20 @@ class VerificationService {
     var exists = await checkVerification(id, topic);
     if (exists != null) {
       var res = await server.databaseApi.update((collection("verifications")
-        ..where("verification_id", isEqualTo: id)..where(
-            "status", isEqualTo: VerificationStatus.verified.index)..where(
-            "used", isEqualTo: false)..where("verification_topic", isEqualTo: topic))
-          .toQuery(QueryType.update ,allowAll: true)
-        ..update = {
-          "\$set": {
-            "used": true,
-            "use_info": {
-              "device": device,
-              "token": token,
-            }
-          }
-        });
+            ..where("verification_id", isEqualTo: id)
+            ..where("status", isEqualTo: VerificationStatus.verified.index)
+            ..where("used", isEqualTo: false)
+            ..where("verification_topic", isEqualTo: topic))
+          .toQuery(QueryType.update, allowAll: true)
+            ..update = {
+              "\$set": {
+                "used": true,
+                "use_info": {
+                  "device": device,
+                  "token": token,
+                }
+              }
+            });
 
       return res;
     }
@@ -118,16 +119,14 @@ class VerificationService {
     var code = data.data!["code"];
     if (verifications[id] == null) {
       sendMessage(listener.client,
-          data.response({"error": "not_found"})
-            ..success = false);
+          data.response({"error": "not_found"})..success = false);
       return;
     }
 
     var res = await verifications[id]!.verify(code);
 
     sendMessage(listener.client,
-        data.response({"success": true, "verified": true})
-          ..success = res);
+        data.response({"success": true, "verified": true})..success = res);
     return;
   }
 
@@ -141,27 +140,38 @@ class VerificationService {
           data.data!["topic"],
           VerificationType.values[data.data!["type"]], () {
         verifications.remove(id);
-      }, duration: Duration(milliseconds: data.data ? ["duration"])))!;
+      }, duration: Duration(milliseconds: data.data?["duration"])))!;
+
+      if (verifications[id] == null) {
+        sendMessage(
+            listener.client,
+            data.response({"status": VerificationStatus.creationFail.index})
+              ..success = true);
+        return;
+      }
 
       await sendMail(verifications[id]!.mail, verifications[id]!.code);
-      sendMessage(listener.client,
-          data.response({"status": VerificationStatus.waiting.index}));
+      sendMessage(
+          listener.client,
+          data.response({"status": VerificationStatus.waiting.index})
+            ..success = true);
     }
   }
 
   ///
-  Future<Map<String, dynamic>?> checkVerification(String id,
-      String topic) async {
+  Future<Map<String, dynamic>?> checkVerification(
+      String id, String topic) async {
     print("CHECKING");
     try {
       var res = await server.databaseApi.query((collection("verifications")
-        ..where("verification_id", isEqualTo: id)..where(
-            "status", isEqualTo: VerificationStatus.verified.index)..where(
-            "used", isEqualTo: false)..where("verification_topic", isEqualTo: topic))
-          .toQuery(QueryType.query,allowAll: true));
+            ..where("verification_id", isEqualTo: id)
+            ..where("status", isEqualTo: VerificationStatus.verified.index)
+            ..where("used", isEqualTo: false)
+            ..where("verification_topic", isEqualTo: topic))
+          .toQuery(QueryType.query, allowAll: true));
       print("VERIF CHECK RES $res");
       return res;
-    } catch (e , s) {
+    } catch (e, s) {
       print("CHECKING HATA: $e \n $s");
     }
   }

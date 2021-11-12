@@ -128,13 +128,13 @@ Future<SocketData?> sendAndWaitMessage(
     id: waitingID != null
         ? waitingID
         : anyID
-        ? null
-        : socketData.messageId,
+            ? null
+            : socketData.messageId,
     type: waitingType != null
         ? waitingType
         : anyType
-        ? null
-        : socketData.type,
+            ? null
+            : socketData.type,
   );
 }
 
@@ -317,15 +317,13 @@ class WebSocketListener {
 
       ///log device id and request id
       var db = server.databaseApi;
-      var logRes = await db.logConnection({
+      await db.logConnection({
         'id': requestID,
         'deviceID': deviceID,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
-      }).timeout(Duration(milliseconds: 500), onTimeout: () {
-        print("Log timeout");
+      }).timeout(const Duration(milliseconds: 500), onTimeout: () {
         return {"error": "log_timeout"};
       }).catchError((e) {
-        print(e);
         return {"error": e.toString()};
       });
 
@@ -391,7 +389,6 @@ class WebSocketListener {
                   authType: AuthType.loggedIn,
                   deviceID: deviceID!,
                   mail: userData['open']['user_mail'],
-                  passWord: stage3Data.data!['password'],
                   uId: userData['open']['user_id'])
               .encryptedToken;
 
@@ -462,7 +459,6 @@ class WebSocketListener {
                     authType: AuthType.admin,
                     deviceID: deviceID!,
                     mail: userData['open']['user_mail'],
-                    passWord: stage3Data.data!['password'],
                     uId: userData['open']['user_id'])
                 .encryptedToken;
 

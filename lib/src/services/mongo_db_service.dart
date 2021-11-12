@@ -9,8 +9,6 @@ import 'database/database_abstract.dart';
 import 'encryption.dart';
 import 'permission_handler.dart';
 
-
-
 ///
 class TokenDecryptedError implements Error {
   @override
@@ -23,18 +21,15 @@ MongoDb mongoDb = MongoDb();
 
 ///Mongo Db Service
 class MongoDb extends DatabaseApi {
-
   ///
   factory MongoDb() => _instance;
 
   MongoDb._internal();
 
   static final MongoDb _instance = MongoDb._internal();
+
   ///
   late Db mongoDb;
-
-
-
 
   //  String _hostName = 'mongodb://127.0.0.1';
   //  String _port = '9298';
@@ -278,8 +273,6 @@ class MongoDb extends DatabaseApi {
     return mongoDb.collection(query.collection!).findOne(query.selector());
   }
 
-
-
   ///Update Operation
   @override
   Future<Map<String, dynamic>?> update(Query _query) async {
@@ -400,7 +393,6 @@ class MongoDb extends DatabaseApi {
       var dat =
           await mongoDb.collection(query.collection!).insertOne(query.data!);
 
-
       if (dat.success) {
         return {
           "success": dat.success,
@@ -483,10 +475,7 @@ class MongoDb extends DatabaseApi {
             await (encryptionService.decrypt3(userDataEncrypted['data']));
 
         if (userData == null) {
-          return {
-            "success" : false,
-            'error': 'user_data_undefined'
-          };
+          return {"success": false, 'error': 'user_data_undefined'};
         }
         // print("Decrypted User Data: $userData");
         if (userData['user_mail'] == args['user_mail'] &&

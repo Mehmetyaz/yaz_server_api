@@ -186,7 +186,12 @@ class ChatService {
       Query.allowAll(
           queryType: QueryType.query, equals: {CONVERSATION_ID: chatId})
         ..collection = CHAT_COLLECTIONS,
-    ) as FutureOr<Map<String, dynamic>>);
+    ));
+
+    if (chatDoc == null) {
+      sendMessage(listener.client, socketData.response({})..success = false);
+      return;
+    }
 
     var isStarter = chatDoc["starter_id"] == decryptToken.uId;
 
@@ -293,21 +298,29 @@ class ChatService {
 
       var decryptToken = await token.decryptToken();
 
+      var data = {
+        CONVERSATION_ID: chatId,
+        "receiver_id": receiver,
+        LAST_ACTIVITY: DateTime.now().millisecondsSinceEpoch,
+        "starter_id": decryptToken.uId,
+        "total_message_count": 0
+      };
       var doc = await (server.databaseApi.insertQuery(Query.allowAll(
         queryType: QueryType.insert,
       )
         ..collection = CHAT_COLLECTIONS
-        ..data = {
-          CONVERSATION_ID: chatId,
-          "receiver_id": receiver,
-          LAST_ACTIVITY: DateTime.now().millisecondsSinceEpoch,
-          "starter_id": decryptToken.uId,
-          "total_message_count": 0
-        }) as FutureOr<Map<String, dynamic>>);
-
+        ..data = data));
+      print("DOC BURASI: $doc");
+      if (doc == null || !doc["success"]) {
+        sendMessage(listener.client, socketData.response({})..success = false);
+        return;
+      }
+      print("DOC BURASI2: $doc");
       sendMessage(listener.client,
-          socketData.response({"document": doc["ops"][0]})..success = true);
-    } on Exception {
+          socketData.response({"document": data})..success = true);
+    } on Exception catch (e) {
+      sendMessage(listener.client,
+          socketData.response({"Error": e.toString()})..success = false);
       //TODO: ADD ERROR
     }
   }

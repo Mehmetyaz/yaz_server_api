@@ -1,9 +1,52 @@
 import 'dart:convert';
 
-
-
 import '../services/encryption.dart';
+import 'device_id.dart';
 import 'statics.dart';
+import 'token/token.dart';
+
+///
+abstract class YazRequest {
+  ///
+  YazRequest({required this.type, required this.requestId, required this.data});
+
+  /// Response success
+  Future<void> response();
+
+  /// Response Error
+  Future<void> error();
+
+  ///
+  String requestId;
+
+  ///
+  String type;
+
+  /// Request side data
+  Map<String, dynamic> data;
+}
+
+///
+class YazContext {
+  ///
+  YazContext({required this.deviceId, this.token});
+
+  ///
+  DeviceId deviceId;
+
+  ///
+  AccessToken? token;
+
+  ///
+  bool get encrypted {
+    return token != null;
+  }
+
+  ///
+  Future<String?> get userID async {
+    //TODO:
+  }
+}
 
 ///
 class SocketData {
@@ -21,9 +64,6 @@ class SocketData {
   ///
   factory SocketData.fromJson(Map<String, dynamic> data) =>
       SocketData.fromFullData(data);
-
-
-
 
   ///
   SocketData.fromFullData(this.fullData) {
@@ -57,9 +97,10 @@ class SocketData {
   ) {
     return SocketData.fromFullData(json.decode(rawData));
   }
+
   ///
-  SocketData response(Map<String, dynamic> data){
-    return SocketData.create(data: data, type: type ,messageId: messageId);
+  SocketData response(Map<String, dynamic> data) {
+    return SocketData.create(data: data, type: type, messageId: messageId);
   }
 
   ///

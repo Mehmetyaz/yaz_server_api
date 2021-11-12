@@ -283,8 +283,8 @@ class TriggerService {
     // print(res);
 
     if (res.containsKey("data") && res["data"] != null) {
-      var isListen = _listeners[res["data"]["_id"]] != null &&
-          _listeners[res["data"]["_id"]]!.isNotEmpty;
+      var isListen = _listeners[res["data"]["_id"].toString()] != null &&
+          _listeners[res["data"]["_id"].toString()]!.isNotEmpty;
 
       //print("is Listen : ${_listeners[res["data"]["_id"]]}");
 
@@ -295,7 +295,7 @@ class TriggerService {
             trig(query, before, value).timeout(timeout, onTimeout: () {});
           }
           value!["type"] = "update";
-          notifyListeners(res["data"]["_id"], value);
+          notifyListeners(res["data"]["_id"].toString(), value);
         });
       } else {
         for (var trig in _onUpdateTriggers[query.collection!] ?? <OnUpdate>[]) {
@@ -312,7 +312,7 @@ class TriggerService {
     for (var trig in _onDeleteTriggers[query.collection!] ?? <OnDelete>[]) {
       trig(query, before).timeout(timeout, onTimeout: () {});
     }
-    notifyListeners(res["_id"], {"type": "delete"});
+    notifyListeners(res["_id"].toString(), {"type": "delete"});
   }
 
   void _triggerCreates(Query query, Map<String, dynamic> res) {
