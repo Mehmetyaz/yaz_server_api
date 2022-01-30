@@ -46,6 +46,8 @@ class AuthService {
       var res = await verificationService.checkVerification(
           data["id"], "password_reset");
 
+      print("Verif checked: $res");
+
       if (res == null) return;
 
       var userDoc = await server.databaseApi

@@ -1,9 +1,8 @@
-import '../../yaz_server_api.dart';
-import '../models/socket_data_model.dart';
-import '../models/verification.dart';
-import '../models/web_socket_listener.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+
+import '../../yaz_server_api.dart';
+import '../models/verification.dart';
 
 ///
 class VerificationService {
@@ -47,7 +46,7 @@ class VerificationService {
       final sendReport = await send(message, smtpServer);
       print('Message sent: ' + sendReport.toString());
     } on MailerException catch (e) {
-      print('Message not sent: ${code}.');
+      print('Message not sent: : $e ${code}.');
       for (var p in e.problems) {
         print('Problem: ${p.code}: ${p.msg}');
       }
@@ -72,7 +71,7 @@ class VerificationService {
       WebSocketListener listener, SocketData data) async {
     if (data.data == null) return;
 
-    var res = await useVerification(
+    await useVerification(
         topic: data.data!["topic"],
         id: data.data!["id"],
         token: data.data!["token"],
@@ -174,5 +173,6 @@ class VerificationService {
     } catch (e, s) {
       print("CHECKING HATA: $e \n $s");
     }
+    return null;
   }
 }

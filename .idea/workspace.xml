@@ -23,43 +23,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0549c849-1435-46bb-aab7-e3137d20d1a3" name="Default Changelist" comment="hatalar düzeltildi">
-      <change afterPath="$PROJECT_DIR$/lib/src/models/codes/error_codes.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/models/data/context.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/models/data/data.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/models/data/request.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/models/data/response.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/models/device_id.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/services/admin/admin_service.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/services/requests/request_handler.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/data/request.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis_options.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/listener.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/listener.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/query.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/query.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/socket_data_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/socket_data_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/statics.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/statics.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/token/token.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/token/token.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/user/current_user.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user/current_user.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/user/user_model.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user/user_model.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/verification.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/verification.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/web_socket_listener.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/web_socket_listener.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/auth_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/chat_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/chat_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/encryption.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/encryption.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/https_server.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/https_server.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/mongo_db_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/mongo_db_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/trigger_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/trigger_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/verification_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/verification_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/services/ws_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/services/ws_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/yaz_server_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/yaz_server_api.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/yaz_server_api_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/yaz_server_api_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,6 +54,9 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="1mINYLscMv9AXlXrjvAKF0SfFJ4" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -103,7 +72,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../dikimall_app" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -142,6 +111,13 @@
       <workItem from="1618592435884" duration="659000" />
       <workItem from="1621155401604" duration="1374000" />
       <workItem from="1621169013584" duration="3462000" />
+      <workItem from="1637945129854" duration="1363000" />
+      <workItem from="1638004203560" duration="653000" />
+      <workItem from="1638089425894" duration="1743000" />
+      <workItem from="1638126776067" duration="1298000" />
+      <workItem from="1638180432010" duration="1208000" />
+      <workItem from="1639605963777" duration="48000" />
+      <workItem from="1641030001717" duration="25000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <created>1611043356542</created>
@@ -348,7 +324,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial Commit" />
