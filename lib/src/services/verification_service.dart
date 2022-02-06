@@ -27,8 +27,15 @@ class VerificationService {
 
   ///
   Future<void> sendMail(String toAddress, String code) async {
+
+
+
+    print("CODE CREATED FOR: $toAddress $code");
+    return;
+
+
     final smtpServer =
-        SmtpServer("styledart.dev", username: "password", ssl: true);
+        SmtpServer("styledart.dev", username: "noreply", ssl: true);
     // Use the SmtpServer class to configure an SMTP server:
     // final smtpServer = SmtpServer('smtp.domain.com');
     // See the named arguments of SmtpServer for further configuration
@@ -43,11 +50,12 @@ class VerificationService {
       ..html =
           "<h1>Test</h1>\n<p> Bu Kod ile Şifrenizi Yenileyebilirsiniz: $code</p>";
 
+
     try {
       final sendReport = await send(message, smtpServer);
       print('Message sent: $sendReport');
     } on MailerException catch (e) {
-      print('Message not sent: $mail : $e $code.');
+      print('Message not sent: $mail : $e');
       for (var p in e.problems) {
         print('Problem: ${p.code}: ${p.msg}');
       }
@@ -125,6 +133,7 @@ class VerificationService {
 
     var res = await verifications[id]!.verify(code);
 
+    print("SENT VERIF: ${res}");
     sendMessage(listener.client,
         data.response({"success": res, "verified": true})..success = res);
     return;
@@ -150,7 +159,7 @@ class VerificationService {
         return;
       }
 
-      await sendMail(verifications[id]!.mail, verifications[id]!.code);
+      sendMail(verifications[id]!.mail, verifications[id]!.code);
       sendMessage(
           listener.client,
           data.response({"status": VerificationStatus.waiting.index})
