@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cryptography/cryptography.dart';
 
@@ -33,8 +34,6 @@ class AuthService {
   ///
   final VerificationService verificationService = VerificationService();
 
-
-
   ///
   Future<void> setNewPassword(
       WebSocketListener listener, SocketData socketData) async {
@@ -67,6 +66,8 @@ class AuthService {
         'password': data["password"]
       };
 
+      print("JSON: : :  ${json.encode(secret)}");
+
       var secretEncrypted = await encryptionService.encrypt3(secret);
 
       var used = await verificationService.useVerification(
@@ -83,7 +84,10 @@ class AuthService {
             equals: {"user_id": userDoc["user_id"]})
           ..collection = "users_secret"
           ..update = {
-            "\$set": {'data': secretEncrypted}
+            "\$set": {
+              'data': secretEncrypted,
+              "last_set": DateTime.now().toString()
+            }
           },
       );
 

@@ -27,7 +27,8 @@ class VerificationService {
 
   ///
   Future<void> sendMail(String toAddress, String code) async {
-    final smtpServer = yandex(mail, pass);
+    final smtpServer =
+        SmtpServer("styledart.dev", username: "password", ssl: true);
     // Use the SmtpServer class to configure an SMTP server:
     // final smtpServer = SmtpServer('smtp.domain.com');
     // See the named arguments of SmtpServer for further configuration
@@ -44,9 +45,9 @@ class VerificationService {
 
     try {
       final sendReport = await send(message, smtpServer);
-      print('Message sent: ' + sendReport.toString());
+      print('Message sent: $sendReport');
     } on MailerException catch (e) {
-      print('Message not sent: : $e ${code}.');
+      print('Message not sent: $mail : $e $code.');
       for (var p in e.problems) {
         print('Problem: ${p.code}: ${p.msg}');
       }
@@ -96,15 +97,15 @@ class VerificationService {
             ..where("used", isEqualTo: false)
             ..where("verification_topic", isEqualTo: topic))
           .toQuery(QueryType.update, allowAll: true)
-            ..update = {
-              "\$set": {
-                "used": true,
-                "use_info": {
-                  "device": device,
-                  "token": token,
-                }
-              }
-            });
+        ..update = {
+          "\$set": {
+            "used": true,
+            "use_info": {
+              "device": device,
+              "token": token,
+            }
+          }
+        });
 
       return res;
     }
@@ -125,7 +126,7 @@ class VerificationService {
     var res = await verifications[id]!.verify(code);
 
     sendMessage(listener.client,
-        data.response({"success": true, "verified": true})..success = res);
+        data.response({"success": res, "verified": true})..success = res);
     return;
   }
 
@@ -160,7 +161,6 @@ class VerificationService {
   ///
   Future<Map<String, dynamic>?> checkVerification(
       String id, String topic) async {
-    print("CHECKING");
     try {
       var res = await server.databaseApi.query((collection("verifications")
             ..where("verification_id", isEqualTo: id)
@@ -168,11 +168,8 @@ class VerificationService {
             ..where("used", isEqualTo: false)
             ..where("verification_topic", isEqualTo: topic))
           .toQuery(QueryType.query, allowAll: true));
-      print("VERIF CHECK RES $res");
       return res;
-    } catch (e, s) {
-      print("CHECKING HATA: $e \n $s");
-    }
+    } on Exception {}
     return null;
   }
 }

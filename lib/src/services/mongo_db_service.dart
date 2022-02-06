@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:mongo_dart/mongo_dart.dart';
@@ -426,6 +427,8 @@ class MongoDb extends DatabaseApi {
         'user_mail': args['user_mail'],
         'password': args['password']
       };
+
+      print("JSON on reg: : :  ${json.encode(secret)}");
 
       var open = args;
       // ignore: cascade_invocations
