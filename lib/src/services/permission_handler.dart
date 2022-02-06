@@ -121,7 +121,7 @@ class PermissionHandler {
 
   ///Resource
   static Future<Map<String, dynamic>?> resource(Query query) {
-    // print("RESOURCE GET : $query");
+
     return server.databaseApi.getResource(query);
   }
 
@@ -170,7 +170,7 @@ class PermissionHandler {
           .timeout(const Duration(seconds: 5), onTimeout: () {
         return false;
       });
-      // print("PERMISSION CHECKED $data");
+
       return data;
     } else {
       return defaultRules[query.operationType];

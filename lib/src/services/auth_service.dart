@@ -37,7 +37,7 @@ class AuthService {
   ///
   Future<void> setNewPassword(
       WebSocketListener listener, SocketData socketData) async {
-    print("NEW PASS${socketData.fullData}");
+
     try {
       if (socketData.data == null) return;
       var data = socketData.data!;
@@ -45,7 +45,7 @@ class AuthService {
       var res = await verificationService.checkVerification(
           data["id"], "password_reset");
 
-      print("Verif checked: $res");
+
 
       if (res == null) return;
 
@@ -56,17 +56,17 @@ class AuthService {
             ..collection = "users");
 
       if (userDoc == null) {
-        print("user data is null: $userDoc");
+
         return;
       }
-      print("user doc DATA: $userDoc");
+
 
       var secret = <String, dynamic>{
         'user_mail': res['mail'],
         'password': data["password"]
       };
 
-      print("JSON: : :  ${json.encode(secret)}");
+
 
       var secretEncrypted = await encryptionService.encrypt3(secret);
 
@@ -76,7 +76,7 @@ class AuthService {
           token: data["token"],
           device: listener.deviceID!);
 
-      print("used DATA: $used");
+
 
       var update = await server.databaseApi.update(
         Query.allowAll(
@@ -91,7 +91,7 @@ class AuthService {
           },
       );
 
-      print("UPDATE DATA: $update");
+
 
       sendMessage(
           listener.client,
@@ -114,7 +114,7 @@ class AuthService {
           ..where("user_mail", isEqualTo: data.data!["mail_or_phone"]))
         .toQuery(QueryType.exists,
             allowAll: true, token: AccessToken.fromToken(data.data!["token"])));
-    print("EXISTS QQQQ: ${res}");
+
     sendMessage(listener.client,
         data.response(res ?? {"success": false})..success = true);
     return;
@@ -155,7 +155,7 @@ class AuthService {
           uId: _dbRes['open']['user_id']);
       _dbRes['open']['token'] = await token.encryptedToken;
     }
-    // print(_dbRes['open']);
+
 
     sendMessage(
         listener.client,
@@ -190,7 +190,7 @@ class AuthService {
           uId: _dbRes['open']['user_id']);
       _dbRes['open']['token'] = await token.encryptedToken;
     }
-    // print(_dbRes['open']);
+
 
     sendMessage(
         listener.client,

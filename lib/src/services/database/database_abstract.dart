@@ -53,15 +53,10 @@ abstract class DatabaseApi<T extends Exception> {
       ///Try Operation
       if ((await (server.permissionHandler.check(query)) ?? false)) {
         var dat = await server.triggerService.triggerAndReturn(query, interop);
-        //
-        // print("DATA ON INTEROP TRIGGER $dat \n"
-        //     "QUERY: ${query.collection}  ${query.queryType}");
 
         return dat;
       } else {
-        // print('Permission Denied for 1'
-        //     ' \ncollection ${query.collection}\n${query.queryType}');
-        return {
+          return {
           'success': false,
           'error_code': 816,
           'reason': 'Permission Denied for 2'
@@ -82,8 +77,6 @@ abstract class DatabaseApi<T extends Exception> {
           if (await (server.permissionHandler.check(query)) ?? false) {
             return await server.triggerService.triggerAndReturn(query, interop);
           } else {
-            // print('Permission Denied for'
-            //     ' \ncollection ${query.collection}\n${query.queryType}');
 
             return {
               'success': false,
@@ -93,11 +86,6 @@ abstract class DatabaseApi<T extends Exception> {
           }
           // ignore: avoid_catches_without_on_clauses
         } catch (e,s) {
-          //TODO: ADD ERROR
-          // ignore: lines_longer_than_80_chars
-          // print('CONNECTED AND ERROR AGAIN . type :'
-          //     ' ${e.runtimeType} , message : ${e.toString()}');
-
           ///Return exception details
           ///should'nt connection error
           return {

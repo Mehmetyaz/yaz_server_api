@@ -71,7 +71,7 @@ class VerificationSession {
             "used": false
           });
 
-    print("Verif Creating: $res");
+
     if (res != null) {
       return VerificationSession._(
           type: type,

@@ -55,7 +55,6 @@ class Operation {
         late Query q;
         Map<String, dynamic>? dbResponse;
         try {
-          // print("ON OP: ${data.data}");
           q = Query.fromMap(data.data!['query']);
         } on Exception catch (e) {
           dbResponse = {"success": false, "reason": e.toString()};
@@ -104,9 +103,6 @@ class Operation {
             break;
         }
 
-        // print("DB RESPONSE \nDB RESPONSE \nDB RESPONSE \nDB RESPONSE \n"
-        //     "${q.queryType}   $isListen"
-        //     "DB RESPONSE \nDB RESPONSE \nDB RESPONSE \nDB RESPONSE \n");
 
         sendMessage(
             listener.client,
@@ -147,45 +143,3 @@ class Operation {
 typedef CustomOperation = Future<void> Function(
     WebSocketListener listener, SocketData socketData);
 
-/*else if (data.type == 'upload_image') {
-      print("IMAGE UPLOADED START");
-      if (data.data != null) {
-        print("IMAGE UPLOADED");
-        var mediaService = MediaService();
-        var bytes = Statics.uint8Cast(data.data['image_bytes']);
-        print("IMAGE UPLOADED IMAGE BYTES:::: ${bytes.length}");
-        var imageID = await mediaService.addImage(bytes, "");
-        print("IMAGE UPLOADED IMAGE ID:::: $imageID");
-
-        print("IMAGE UPLOADED:::: $imageID");
-        sendMessage(
-            listener.client,
-            await SocketData.fromFullData({
-              'message_id': data.messageId,
-              'message_type': data.type,
-              'success': true,
-              'data': {"image_id": imageID}
-            }).encrypt(listener.nonce, listener.cnonce));
-        return 'ok';
-      } else {
-        return 'false';
-      }
-    } else if (data.type == 'update_document') {
-      print("UPDATE STARTED");
-      if (data.data != null) {
-        var q = Query.fromMap(data.data);
-        var dbResponse = await _db.update(q);
-        print(dbResponse);
-        sendMessage(
-            listener.client,
-            await SocketData.fromFullData({
-              'message_id': data.messageId,
-              'message_type': data.type,
-              'success': dbResponse['success'],
-              'data': dbResponse
-            }).encrypt(listener.nonce, listener.cnonce));
-        return 'ok';
-      } else {
-        return "false";
-      }
-    }*/

@@ -57,23 +57,17 @@ class WebSocketService {
   ///
   Future<void> closeListener(WebSocketListener listener) async {
     if (listener.timer != null && listener.timer!.isActive) {
-      // print("timer closed");
+
       listener.timer!.cancel();
     } else {
-      // print("timer al closed");
+
     }
 
     await listener.client?.close(3500, 'CLOSING');
-    // print("nulls ok");
 
     listener
       ..timer = null
       ..client = null;
-
-/*    if (!listener.streamController.isClosed) {
-      await listener.streamController.close();
-    }*/
     activeListeners.remove(listener);
-    // print('REMOVED: $activeListenerCount');
   }
 }

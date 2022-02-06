@@ -130,9 +130,8 @@ class TriggerService {
 
   ///
   void addListener(DbListener dbListener) {
-    // //print("EKLENDI:::::: ${dbListener.id} \n\n\n\n");
 
-    //print("Adding Listeners : ${dbListener.id}");
+
     if (_listeners[dbListener.id] == null) {
       _listeners[dbListener.id] = <String?, DbListener>{};
     }
@@ -185,7 +184,6 @@ class TriggerService {
   Future<void> _notify(
       String? objectId, Map<String, dynamic> data, int millis) async {
     try {
-      //print("Dinleyici Notify");
 
       if (_listeners.containsKey(objectId)) {
         await Future.delayed(const Duration(seconds: 2));
@@ -204,7 +202,6 @@ class TriggerService {
             DateTime.now().millisecondsSinceEpoch - lastSends[objectId]! >
                 2000);
 
-        //print("A: $a    B: $b");
 
         if (a || b) {
           lastSends[objectId] = DateTime.now().millisecondsSinceEpoch;
@@ -275,18 +272,12 @@ class TriggerService {
 
   void _triggerUpdates(Query query, Map<String, dynamic>? before, afterReq,
       Map<String, dynamic> res) {
-    // //print("UPDATE LISTENERS LEN: : "
-    // ignore: lines_longer_than_80_chars
-    //     ": ${_listeners[res["data"]["_id"]] == null ? null : _listeners[res["data"]["_id"]].length}");
 
-    // print(_listeners);
-    // print(res);
 
     if (res.containsKey("data") && res["data"] != null) {
       var isListen = _listeners[res["data"]["_id"].toString()] != null &&
           _listeners[res["data"]["_id"].toString()]!.isNotEmpty;
 
-      //print("is Listen : ${_listeners[res["data"]["_id"]]}");
 
       if (afterReq || isListen) {
         PermissionHandler.resource(query).then((value) {

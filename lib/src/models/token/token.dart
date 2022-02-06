@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
 
@@ -202,7 +203,7 @@ Future<Map<String, dynamic>?> checkToken(String token) async {
 
     return p;
   } on Exception catch (e) {
-    print(e);
+    stdout.write(e);
     return null;
   }
 }
@@ -219,7 +220,7 @@ Future<String> encryptToken(Map<String, dynamic> payload) async {
       nonce: []);
 
   //
-  // print("PPPP: ${base64.decode(utf8.decode(mac.mac.bytes))}");
+
 
   return "$base64H.$base64P.${base64Url.encode(mac.bytes)}";
 }

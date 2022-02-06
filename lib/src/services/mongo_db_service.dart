@@ -46,13 +46,10 @@ class MongoDb extends DatabaseApi {
   //
   //   var _r =
   //       await connect().timeout(const Duration(seconds: 10), onTimeout: () {
-  //     // ignore: avoid_print
-  //     print("Mongo not connected");
+
   //     return false;
   //   });
   //   if (_r) {
-  //     // ignore: avoid_print
-  //     print("Mongo Connected: ${mongoDb.isConnected}");
   //   }
   // }
 
@@ -73,7 +70,6 @@ class MongoDb extends DatabaseApi {
   //
   //     var separator = path.separator;
   //
-  //     // print(q);
   //
   //     var profile = File('${path.current}$separator'
   //         'lib$separator'
@@ -168,7 +164,6 @@ class MongoDb extends DatabaseApi {
 //             .build())
 //         .toList();
 //
-//     print("Lıst leng : $l");
 //
 //     Timer.periodic(const Duration(milliseconds: 50), (t) {
 //       l.shuffle();
@@ -186,8 +181,7 @@ class MongoDb extends DatabaseApi {
 // //        .collection("posts")
 // //        .aggregateToStream((AggregationPipelineBuilder()
 // //              ..addStage(Match(where.gte('createDate', 0).map['\$query'])))
-// //            .build())
-// //        .listen(print);
+// //            .build());
 // //
 // //     _mongoDb
 // //         .collection("users")
@@ -195,7 +189,6 @@ class MongoDb extends DatabaseApi {
 // //             .addStage(Match(where.gte("user_id", "000").map['\$query']))
 // //             .build())
 // //         .listen((event) {
-// //       print("EVENT: $event");
 // //
 // //       _mongoDb.collection("users").update(where.eq("_id", event["_id"]), {
 // //         "\$rename": {
@@ -235,8 +228,6 @@ class MongoDb extends DatabaseApi {
     await mongoDb.open().timeout(const Duration(seconds: 5), onTimeout: () {
       return false;
     }).onError((error, stackTrace) {
-      // ignore: avoid_print
-      print("ERROR: $error \n $stackTrace");
     });
 
     connected = mongoDb.isConnected;
@@ -281,7 +272,7 @@ class MongoDb extends DatabaseApi {
       var dat = await mongoDb.collection(_query.collection!).update(
           _query.selector(), _query.update,
           upsert: true, writeConcern: WriteConcern.UNACKNOWLEDGED);
-      // print("UPDATE QUERY : $dat");
+
       // ignore: unnecessary_null_comparison
       if (dat != null) {
         return {
@@ -301,7 +292,7 @@ class MongoDb extends DatabaseApi {
       var dat = await mongoDb
           .collection(_query.collection!)
           .remove(_query.selector(), writeConcern: WriteConcern.UNACKNOWLEDGED);
-      // print("UPDATE QUERY : $dat");
+
       // ignore: unnecessary_null_comparison
       if (dat != null) {
         return {
@@ -338,7 +329,7 @@ class MongoDb extends DatabaseApi {
       // ignore: unnecessary_null_comparison
       if (res != null) {
         dat['success'] = true;
-        // print("QUERY RESULT : $dat");
+
         dat["count"] = res;
         return dat;
       } else {
@@ -356,7 +347,7 @@ class MongoDb extends DatabaseApi {
       // ignore: unnecessary_null_comparison
       if (dat != null) {
         dat['success'] = true;
-        // print("QUERY RESULT : $dat");
+
         return dat;
       } else {
         return {'success': false, 'error': 'data_is_null'};
@@ -375,7 +366,7 @@ class MongoDb extends DatabaseApi {
             .toList()
       };
 
-      // print("LİST QUERY : $dat \n\n${query.toMap()}");
+
       // ignore: unnecessary_null_comparison
       if (dat != null) {
         dat['success'] = true;
@@ -389,7 +380,7 @@ class MongoDb extends DatabaseApi {
   ///insert query
   @override
   Future<Map<String, dynamic>?> insertQuery(Query query) async {
-    // print("INSERT:::::: ${query.data}");
+
     return operation(query, () async {
       var dat =
           await mongoDb.collection(query.collection!).insertOne(query.data!);
@@ -428,17 +419,17 @@ class MongoDb extends DatabaseApi {
         'password': args['password']
       };
 
-      print("JSON on reg: : :  ${json.encode(secret)}");
+
 
       var open = args;
       // ignore: cascade_invocations
       open.remove('password');
       var secretEncrypted = await encryptionService.encrypt3(secret);
-      // print("ARGS: $args \n\nOPEN: $open \n\nSECRET::$secret");
+
       var res = await mongoDb
           .collection("users")
           .insert(open, writeConcern: WriteConcern.ACKNOWLEDGED);
-      // print("ADD USER OP START4");
+
       var res2 = await mongoDb.collection("users_secret").insert(
           {'data': secretEncrypted, 'user_id': args['user_id']},
           writeConcern: WriteConcern.ACKNOWLEDGED);
@@ -461,16 +452,16 @@ class MongoDb extends DatabaseApi {
         'user_mail': args!['user_mail'],
         'password': args['password']
       };
-      // print(userD);
+
 
       var encryptedSecret = await encryptionService.encrypt3(userD);
-      // print("Search User: : $encryptedSecret");
+
 
       var userDataEncrypted = await mongoDb
           .collection("users_secret")
           .findOne(where.eq('data', encryptedSecret));
 
-      // print("Encrypted User Data: $userDataEncrypted");
+
 
       //ignore: unnecessary_null_comparison
       if (userDataEncrypted != null && userDataEncrypted['data'] != null) {
@@ -480,12 +471,12 @@ class MongoDb extends DatabaseApi {
         if (userData == null) {
           return {"success": false, 'error': 'user_data_undefined'};
         }
-        // print("Decrypted User Data: $userData");
+
         if (userData['user_mail'] == args['user_mail'] &&
             userData['password'] == args['password']) {
           ///User Conirmed
-          // print("USER CONFIRMED");
-          // print('CONFIRM USER :::: $userData');
+
+
 
           var userOpenData = await mongoDb
               .collection("users")
@@ -499,7 +490,7 @@ class MongoDb extends DatabaseApi {
             return {'success': false, 'error': 'user_data_undefined'};
           }
         } else {
-          // print("USER NOT CONFIRMED");
+
           return {'success': false, 'error': 'invalid_password'};
         }
       } else {

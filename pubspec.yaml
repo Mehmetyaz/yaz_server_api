@@ -1,6 +1,6 @@
 name: yaz_server_api
 description: Yaz Framework Api For Dart Server
-version: 0.0.6+18
+version: 0.0.6+20
 homepage: https://github.com/Mehmetyaz/yaz_client.git
 repository: https://github.com/Mehmetyaz/yaz_client.git
 

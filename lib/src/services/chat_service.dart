@@ -310,12 +310,10 @@ class ChatService {
       )
         ..collection = CHAT_COLLECTIONS
         ..data = data));
-      print("DOC BURASI: $doc");
       if (doc == null || !doc["success"]) {
         sendMessage(listener.client, socketData.response({})..success = false);
         return;
       }
-      print("DOC BURASI2: $doc");
       sendMessage(listener.client,
           socketData.response({"document": data})..success = true);
     } on Exception catch (e) {

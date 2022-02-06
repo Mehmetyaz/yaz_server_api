@@ -30,7 +30,6 @@ Future<SocketData> waitMessage(Stream stream,
     Function? onTimeout,
     Duration duration = const Duration(seconds: 30)}) async {
   try {
-    // print(' $id $type');
     assert(id != null || type != null, "[id] or [type] must defined");
 
     var completer = Completer.sync();
@@ -42,7 +41,6 @@ Future<SocketData> waitMessage(Stream stream,
       sink.close();
       completer.complete(null);
     }).where((event) {
-      // print("SOCKET EVENT ON WAIT MESSAGE: $event");
 
       try {
         var _d = SocketData.fromSocket(event);
@@ -61,18 +59,14 @@ Future<SocketData> waitMessage(Stream stream,
         return false;
       }
     }).listen((event) {
-      // print("SOCKET LISTEN : $event");
       completer.complete(event);
     });
 
     var completed = await completer.future;
-    // print(completed);
     await _subscription.cancel();
     if (completed != null) {
-      // print('IS NOT EMPTY : $completed');
       return SocketData.fromSocket(completed);
     } else {
-      // print('IS EMPTY');
       return SocketData.fromFullData({
         "reason": "Message Not Found In Expected Time",
         "message_type": type,
@@ -95,11 +89,10 @@ void sendMessage(WebSocket? webSocket, SocketData socketData,
     {Function? onError}) {
   try {
     if (webSocket != null && webSocket.closeCode == null) {
-      // print("SEND MESSAGE IN : ${socketData.fullData}");
       webSocket.addUtf8Text(utf8.encode(json.encode(socketData.toJson())));
     } else {
       if (onError != null) onError();
-      // print("SEND AND WAIT MESSAGE IN CLOSED: ${socketData.fullData}");
+
     }
   } on Exception {
     if (onError != null) onError();
@@ -117,7 +110,7 @@ Future<SocketData?> sendAndWaitMessage(
     Function? onError,
     Function? onTimeout}) async {
   try {
-    // print("SEND AND WAIT MESSAGE IN : ${socketData.fullData}");
+
     sendMessage(socketListener.client, socketData, onError: onError);
   } on Exception {
     //TODO: ADD ERROR
@@ -144,8 +137,7 @@ class WebSocketListener {
   WebSocketListener(this.client) {
     streamController.sink.addStream(client!).whenComplete(() {
       streamController.close();
-      //
-      // print("controller closed");
+
     });
     // timer = Timer.periodic(const Duration(seconds: 120000), (timer) {
     //   checkConnection();
@@ -244,7 +236,7 @@ class WebSocketListener {
     ///Client tarafına benzer şekilde(aynı şekilde )
     ///4 aşamalı bağlantı protokolü var
     try {
-      // print("CONNECTION  STARTED");
+
 
       ///
       ///                       type
@@ -296,7 +288,6 @@ class WebSocketListener {
           stage1Data.messageId == null) {
         throw Exception('Message is null');
       }
-      // print('CONNECTION REQUESTED DATA : ${stage1Data.runtimeType}');
 
       ///unique id for each request
       var requestID = stage1Data.messageId;
@@ -307,7 +298,7 @@ class WebSocketListener {
       deviceID = await encryptionService
           .decrypt4((stage1Data.fullData!['device_id']) ?? "");
 
-      // print("DEVICE ID REVEIVED ::: $deviceID");
+
 
       var req = WebSocketConnectRequest.received(deviceID);
 
@@ -360,7 +351,7 @@ class WebSocketListener {
           }),
           waitingType: 'c_nonce_sending',
           anyID: true);
-      // print('STAGE 3 : $stage3Data');
+
       if (stage3Data == null ||
           stage3Data.fullData == null ||
           stage3Data.type == null ||
@@ -376,13 +367,13 @@ class WebSocketListener {
 
       ///decrypt stage3 data
       await stage3Data.decrypt(nonce, cnonce);
-      // print(stage3Data.data);
+
       if (stage3Data.data!['auth_type'] == null) {
         return false;
       } else if (stage3Data.data!['auth_type'] == 'auth') {
         var userData = await db.confirmUser(stage3Data.data, deviceID);
         if (userData != null && userData['success']) {
-          // print("USER CONFIRMED : $userData");
+
 
           ///User Confirmed
           var token = await AccessToken.generateForUser(
@@ -408,10 +399,6 @@ class WebSocketListener {
             }
           });
 
-          // print(
-          //"ACCESS::: ${await AccessToken.fromToken(token).decryptToken()}");
-
-          // print("SENDING DATA STAGE 4 : ${sending.fullData}");
 
           await sending.encrypt(nonce, cnonce);
 
@@ -419,7 +406,7 @@ class WebSocketListener {
           sendMessage(client, sending);
           return true;
         } else {
-          // print("USER NOT CONFIRMED");
+
 
           ///User Confirmed
           var token =
@@ -452,7 +439,7 @@ class WebSocketListener {
         if (!isAdmin) {
           var userData = await db.confirmUser(stage3Data.data, deviceID);
           if (userData != null && userData['success']) {
-            // print("USER CONFIRMED : $userData");
+
 
             ///User Confirmed
             var token = await AccessToken.generateForUser(
@@ -478,10 +465,6 @@ class WebSocketListener {
               }
             });
 
-            // print(
-            //"ACCESS::: ${await AccessToken.fromToken(token).decryptToken()}");
-
-            // print("SENDING DATA STAGE 4 : ${sending.fullData}");
 
             await sending.encrypt(nonce, cnonce);
 
@@ -489,7 +472,6 @@ class WebSocketListener {
             sendMessage(client, sending);
             return true;
           } else {
-            // print("USER NOT CONFIRMED");
 
             ///User Confirmed
             var token =
@@ -557,17 +539,17 @@ class WebSocketListener {
       try {
         lastOnline = DateTime.now().millisecondsSinceEpoch;
         if (event.runtimeType != String) {
-          // print(utf8.decode(event));
+
         }
         var data = SocketData.fromSocket(event);
 
         if (data.type == 'error') {
           sendMessage(client, data);
         } else if (data.type == 'close') {
-          // print("CLOSE CLOSE CLOSE");
+
           await close();
         } else if (data.type == 'connection_confirmation') {
-          // print("connection_confirmation");
+
         } else {
           if (data.isEncrypted) {
             try {
@@ -580,14 +562,14 @@ class WebSocketListener {
               // TODO:ADD ERROR
             }
           } else {
-            // print('DATA NULLLL : ${data.data}');
+
           }
         }
       } on Exception {
         // TODO:ADD ERROR
       }
     }, onError: (e) async {
-      // print(e);
+
       await close();
     }, cancelOnError: true, onDone: close);
   }
